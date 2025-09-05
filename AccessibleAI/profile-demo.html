@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile & AI Adaptation Demo - VR Accessibility</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .demo-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .demo-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .profile-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+        
+        .profile-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .profile-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .abilities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .ability-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .ability-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-transform: capitalize;
+        }
+        
+        .ability-score {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .ability-bar {
+            background: #e9ecef;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .ability-fill {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .demo-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        
+        .demo-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .demo-btn.secondary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+        
+        .demo-btn.success {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+        
+        .demo-btn.warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+        
+        .demo-btn.danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .adaptations-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .adaptation-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .adaptation-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .adaptation-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .monitoring-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .monitoring-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #27ae60;
+        }
+        
+        .status-indicator.inactive {
+            background: #e74c3c;
+        }
+        
+        .recommendations-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+        }
+        
+        .recommendation-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #f39c12;
+        }
+        
+        .recommendation-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .recommendation-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .recommendation-priority {
+            font-size: 0.8rem;
+            color: #95a5a6;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #2c3e50;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .back-button:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.3);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.error {
+            background: #e74c3c;
+        }
+        
+        .notification.warning {
+            background: #f39c12;
+        }
+        
+        .notification.info {
+            background: #3498db;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .demo-buttons {
+                flex-direction: column;
+            }
+            
+            .demo-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">
+        ← Back to Main
+    </a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>👤 User Profile & AI Adaptation Demo</h1>
+            <p>Test the complete user profile management and AI-driven adaptation system</p>
+        </div>
+        
+        <!-- Profile Overview -->
+        <div class="demo-section">
+            <h2>📊 Profile Overview</h2>
+            <div class="profile-grid" id="profile-grid">
+                <div class="profile-card">
+                    <div class="profile-value" id="profile-name">Loading...</div>
+                    <div class="profile-label">Profile Name</div>
+                </div>
+                <div class="profile-card">
+                    <div class="profile-value" id="mobility-type">Loading...</div>
+                    <div class="profile-label">Mobility Type</div>
+                </div>
+                <div class="profile-card">
+                    <div class="profile-value" id="skill-level">Loading...</div>
+                    <div class="profile-label">Skill Level</div>
+                </div>
+                <div class="profile-card">
+                    <div class="profile-value" id="adaptations-count">0</div>
+                    <div class="profile-label">Active Adaptations</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Abilities Assessment -->
+        <div class="demo-section">
+            <h2>🎯 Abilities Assessment</h2>
+            <div class="abilities-grid" id="abilities-grid">
+                <!-- Abilities will be populated by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Demo Controls -->
+        <div class="demo-section">
+            <h2>🎮 Demo Controls</h2>
+            <div class="demo-buttons">
+                <button class="demo-btn" onclick="simulateAbilityChange()">Simulate Ability Change</button>
+                <button class="demo-btn secondary" onclick="triggerAdaptation()">Trigger Adaptation</button>
+                <button class="demo-btn success" onclick="simulateTaskCompletion()">Complete Task</button>
+                <button class="demo-btn warning" onclick="simulateError()">Simulate Error</button>
+                <button class="demo-btn" onclick="toggleMonitoring()">Toggle Monitoring</button>
+                <button class="demo-btn danger" onclick="resetProfile()">Reset Profile</button>
+            </div>
+        </div>
+        
+        <!-- Active Adaptations -->
+        <div class="demo-section">
+            <h2>🔧 Active Adaptations</h2>
+            <div class="adaptations-section" id="adaptations-section">
+                <div style="text-align: center; color: #6c757d; font-style: italic;">
+                    No active adaptations
+                </div>
+            </div>
+        </div>
+        
+        <!-- Remote Monitoring -->
+        <div class="monitoring-section">
+            <h2>📡 Remote Monitoring</h2>
+            <div class="monitoring-status">
+                <div class="status-indicator" id="monitoring-status"></div>
+                <span id="monitoring-text">Monitoring Inactive</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div>
+                    <div style="font-size: 24px; font-weight: 700; margin-bottom: 5px;" id="session-duration">0m</div>
+                    <div style="opacity: 0.8;">Session Duration</div>
+                </div>
+                <div>
+                    <div style="font-size: 24px; font-weight: 700; margin-bottom: 5px;" id="tasks-completed">0</div>
+                    <div style="opacity: 0.8;">Tasks Completed</div>
+                </div>
+                <div>
+                    <div style="font-size: 24px; font-weight: 700; margin-bottom: 5px;" id="error-count">0</div>
+                    <div style="opacity: 0.8;">Errors</div>
+                </div>
+                <div>
+                    <div style="font-size: 24px; font-weight: 700; margin-bottom: 5px;" id="success-rate">0%</div>
+                    <div style="opacity: 0.8;">Success Rate</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI Recommendations -->
+        <div class="demo-section">
+            <h2>🤖 AI Recommendations</h2>
+            <div class="recommendations-section" id="recommendations-section">
+                <div style="text-align: center; color: #6c757d; font-style: italic;">
+                    Loading recommendations...
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/user-profile.js"></script>
+    <script src="js/ai-adaptation.js"></script>
+    <script src="js/remote-monitoring.js"></script>
+    <script src="js/profile-manager.js"></script>
+    <script src="js/interaction-metrics.js"></script>
+    
+    <script>
+        // Initialize systems
+        let userProfile, aiAdaptationEngine, remoteMonitoringSystem;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSystems();
+            updateDisplay();
+            setupEventListeners();
+        });
+        
+        function initializeSystems() {
+            // Initialize user profile system
+            userProfile = new UserProfile();
+            
+            // Initialize AI adaptation engine
+            aiAdaptationEngine = new AIAdaptationEngine(userProfile, null);
+            
+            // Initialize remote monitoring system
+            remoteMonitoringSystem = new RemoteMonitoringSystem(userProfile, null, aiAdaptationEngine);
+            
+            console.log('Demo systems initialized');
+        }
+        
+        function setupEventListeners() {
+            // Listen for profile updates
+            document.addEventListener('profileUpdated', function(event) {
+                updateDisplay();
+                showNotification('Profile updated successfully', 'success');
+            });
+            
+            document.addEventListener('abilitiesUpdated', function(event) {
+                updateDisplay();
+                showNotification('Abilities updated', 'info');
+            });
+            
+            // Listen for adaptation events
+            document.addEventListener('adaptationsApplied', function(event) {
+                updateAdaptationsDisplay();
+                showNotification('Adaptations applied', 'info');
+            });
+            
+            // Listen for monitoring events
+            document.addEventListener('monitoringStarted', function(event) {
+                updateMonitoringDisplay();
+                showNotification('Remote monitoring started', 'success');
+            });
+            
+            document.addEventListener('monitoringStopped', function(event) {
+                updateMonitoringDisplay();
+                showNotification('Remote monitoring stopped', 'warning');
+            });
+        }
+        
+        function updateDisplay() {
+            updateProfileOverview();
+            updateAbilitiesDisplay();
+            updateAdaptationsDisplay();
+            updateRecommendationsDisplay();
+        }
+        
+        function updateProfileOverview() {
+            const profile = userProfile.getProfile();
+            
+            document.getElementById('profile-name').textContent = profile.name || 'Demo User';
+            document.getElementById('mobility-type').textContent = profile.mobilityType || 'none';
+            
+            // Calculate skill level
+            const abilities = profile.interactionAbilities;
+            const averageAbility = Object.values(abilities).reduce((sum, ability) => sum + ability, 0) / Object.keys(abilities).length;
+            let skillLevel = 'Beginner';
+            if (averageAbility >= 7) skillLevel = 'Expert';
+            else if (averageAbility >= 5) skillLevel = 'Intermediate';
+            else if (averageAbility >= 3) skillLevel = 'Advanced';
+            
+            document.getElementById('skill-level').textContent = skillLevel;
+        }
+        
+        function updateAbilitiesDisplay() {
+            const profile = userProfile.getProfile();
+            const abilities = profile.interactionAbilities;
+            const container = document.getElementById('abilities-grid');
+            
+            container.innerHTML = Object.entries(abilities).map(([ability, score]) => `
+                <div class="ability-card">
+                    <div class="ability-name">${ability.replace(/([A-Z])/g, ' $1').trim()}</div>
+                    <div class="ability-score">${score}/10</div>
+                    <div class="ability-bar">
+                        <div class="ability-fill" style="width: ${(score / 10) * 100}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updateAdaptationsDisplay() {
+            const adaptations = aiAdaptationEngine.getCurrentAdaptations();
+            const container = document.getElementById('adaptations-section');
+            
+            if (adaptations.environment && Object.keys(adaptations.environment).length > 0) {
+                container.innerHTML = Object.entries(adaptations.environment).map(([key, value]) => `
+                    <div class="adaptation-item">
+                        <div class="adaptation-title">${key.replace(/([A-Z])/g, ' $1').trim()}</div>
+                        <div class="adaptation-description">Value: ${JSON.stringify(value)}</div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<div style="text-align: center; color: #6c757d; font-style: italic;">No active adaptations</div>';
+            }
+        }
+        
+        function updateMonitoringDisplay() {
+            const isMonitoring = remoteMonitoringSystem.isCurrentlyMonitoring();
+            const statusIndicator = document.getElementById('monitoring-status');
+            const statusText = document.getElementById('monitoring-text');
+            
+            if (isMonitoring) {
+                statusIndicator.classList.remove('inactive');
+                statusText.textContent = 'Monitoring Active';
+            } else {
+                statusIndicator.classList.add('inactive');
+                statusText.textContent = 'Monitoring Inactive';
+            }
+            
+            // Update session stats
+            const session = remoteMonitoringSystem.getCurrentSession();
+            if (session) {
+                document.getElementById('session-duration').textContent = formatDuration(session.duration || 0);
+                document.getElementById('tasks-completed').textContent = session.metrics?.tasksCompleted || 0;
+                document.getElementById('error-count').textContent = session.metrics?.errors || 0;
+                
+                const successRate = session.metrics?.tasksCompleted > 0 ? 
+                    ((session.metrics.tasksCompleted / (session.metrics.tasksCompleted + session.metrics.errors)) * 100).toFixed(1) : 0;
+                document.getElementById('success-rate').textContent = successRate + '%';
+            }
+        }
+        
+        function updateRecommendationsDisplay() {
+            const analysis = userProfile.analyzeProfile();
+            const container = document.getElementById('recommendations-section');
+            
+            if (analysis.recommendations.length > 0) {
+                container.innerHTML = analysis.recommendations.map(rec => `
+                    <div class="recommendation-item">
+                        <div class="recommendation-title">${rec.title}</div>
+                        <div class="recommendation-description">${rec.description}</div>
+                        <div class="recommendation-priority">Priority: ${rec.priority}</div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<div style="text-align: center; color: #6c757d; font-style: italic;">No recommendations available</div>';
+            }
+        }
+        
+        // Demo functions
+        function simulateAbilityChange() {
+            const abilities = ['fineMotor', 'grossMotor', 'visual', 'auditory', 'cognitive'];
+            const randomAbility = abilities[Math.floor(Math.random() * abilities.length)];
+            const newValue = Math.floor(Math.random() * 10) + 1;
+            
+            userProfile.updateAbilities({ [randomAbility]: newValue });
+            showNotification(`Updated ${randomAbility} to ${newValue}/10`, 'info');
+        }
+        
+        function triggerAdaptation() {
+            const profile = userProfile.getProfile();
+            aiAdaptationEngine.adaptToProfile(profile);
+            showNotification('Adaptation triggered', 'success');
+        }
+        
+        function simulateTaskCompletion() {
+            const task = {
+                name: 'Demo Task',
+                scenario: 'demo',
+                difficulty: 'medium',
+                assistanceLevel: 'moderate',
+                duration: Math.floor(Math.random() * 300000) + 60000, // 1-6 minutes
+                success: true,
+                errors: Math.floor(Math.random() * 3),
+                interactions: Math.floor(Math.random() * 20) + 5
+            };
+            
+            // Simulate task completion
+            aiAdaptationEngine.analyzeAndAdapt({ task, metrics: { successRate: 0.8 } });
+            
+            // Update monitoring if active
+            if (remoteMonitoringSystem.isCurrentlyMonitoring()) {
+                remoteMonitoringSystem.recordTaskCompletion(task);
+            }
+            
+            showNotification('Task completed successfully', 'success');
+        }
+        
+        function simulateError() {
+            const error = {
+                type: 'interaction_error',
+                message: 'Demo error occurred',
+                context: { task: 'Demo Task' }
+            };
+            
+            // Record error
+            if (remoteMonitoringSystem.isCurrentlyMonitoring()) {
+                remoteMonitoringSystem.recordTaskError(error);
+            }
+            
+            showNotification('Error simulated', 'warning');
+        }
+        
+        function toggleMonitoring() {
+            if (remoteMonitoringSystem.isCurrentlyMonitoring()) {
+                remoteMonitoringSystem.stopMonitoring({});
+            } else {
+                remoteMonitoringSystem.startMonitoring({
+                    id: 'demo-session',
+                    startTime: Date.now()
+                });
+            }
+        }
+        
+        function resetProfile() {
+            if (confirm('Are you sure you want to reset the profile? This cannot be undone.')) {
+                userProfile.resetProfile();
+                updateDisplay();
+                showNotification('Profile reset', 'warning');
+            }
+        }
+        
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // Hide notification
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        function formatDuration(milliseconds) {
+            const seconds = Math.floor(milliseconds / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes % 60}m`;
+            } else if (minutes > 0) {
+                return `${minutes}m ${seconds % 60}s`;
+            } else {
+                return `${seconds}s`;
+            }
+        }
+    </script>
+</body>
+</html>

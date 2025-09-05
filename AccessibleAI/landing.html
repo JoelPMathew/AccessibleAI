@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessibility VR - Immersive Training for Independence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background elements */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: float 20s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            font-weight: 300;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .description {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 60px;
+            line-height: 1.7;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            color: #667eea;
+            text-decoration: none;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+        }
+
+        .cta-button:active {
+            transform: translateY(-1px);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 80px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .feature-description {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.5;
+        }
+
+        .accessibility-note {
+            margin-top: 60px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .accessibility-note p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .description {
+                font-size: 1rem;
+            }
+            
+            .cta-button {
+                padding: 16px 32px;
+                font-size: 1.1rem;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                margin-top: 60px;
+            }
+            
+            .feature-card {
+                padding: 25px 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 2rem;
+            }
+            
+            .logo {
+                font-size: 3rem;
+            }
+            
+            .container {
+                padding: 0 10px;
+            }
+        }
+
+        /* Focus styles for accessibility */
+        .cta-button:focus {
+            outline: 3px solid rgba(255, 255, 255, 0.5);
+            outline-offset: 2px;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .main-title, .subtitle, .description {
+                text-shadow: 2px 2px 0px rgba(0,0,0,0.8);
+            }
+            
+            .cta-button {
+                border: 3px solid #000;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            body::before {
+                animation: none;
+            }
+            
+            .logo {
+                animation: none;
+            }
+            
+            .cta-button::before {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🎯</div>
+        
+        <h1 class="main-title">VR Accessibility Hub</h1>
+        
+        <p class="subtitle">Empowering Independence Through Virtual Reality</p>
+        
+        <p class="description">
+            Experience immersive virtual reality scenarios designed to help users with disabilities 
+            practice real-world skills in a safe, controlled environment. Build confidence, 
+            develop independence, and master essential daily living skills with cutting-edge 
+            accessibility technology and AI-powered personalization.
+        </p>
+        
+        <a href="index.html" class="cta-button" role="button" aria-label="Enter the VR Scenario Library">
+            🚀 Enter Scenario Library
+        </a>
+        
+        <div class="features">
+            <div class="feature-card">
+                <span class="feature-icon">🎮</span>
+                <h3 class="feature-title">Immersive Scenarios</h3>
+                <p class="feature-description">
+                    Practice real-world activities in safe, controlled virtual environments
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">♿</span>
+                <h3 class="feature-title">Accessibility First</h3>
+                <p class="feature-description">
+                    Designed with adaptive controls and assistive technology support
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">🤖</span>
+                <h3 class="feature-title">AI-Powered Adaptation</h3>
+                <p class="feature-description">
+                    Intelligent system that adapts to your abilities and learning style
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">📊</span>
+                <h3 class="feature-title">Progress Tracking</h3>
+                <p class="feature-description">
+                    Monitor your development and celebrate achievements along the way
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">🎯</span>
+                <h3 class="feature-title">Personalized Guidance</h3>
+                <p class="feature-description">
+                    Step-by-step guidance tailored to your individual needs and goals
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">👥</span>
+                <h3 class="feature-title">Professional Support</h3>
+                <p class="feature-description">
+                    Remote monitoring and support from therapists and caregivers
+                </p>
+            </div>
+        </div>
+        
+        <div class="accessibility-note">
+            <p>
+                <strong>Accessibility Note:</strong> This application is designed to be fully accessible 
+                with keyboard navigation, screen reader support, and customizable controls. 
+                All scenarios can be experienced with or without VR headsets.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Add smooth scrolling and accessibility enhancements
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctaButton = document.querySelector('.cta-button');
+            
+            // Add keyboard navigation support
+            ctaButton.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    window.location.href = 'index.html';
+                }
+            });
+            
+            // Add focus management
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Tab') {
+                    // Ensure focus is visible
+                    document.body.classList.add('keyboard-navigation');
+                }
+            });
+            
+            document.addEventListener('mousedown', function() {
+                document.body.classList.remove('keyboard-navigation');
+            });
+            
+            // Add loading animation
+            const container = document.querySelector('.container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(30px)';
+            
+            setTimeout(() => {
+                container.style.transition = 'all 0.8s ease';
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Tracking & Analytics Demo - VR Accessibility</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .demo-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .demo-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #e74c3c;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .demo-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        
+        .demo-btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+        }
+        
+        .demo-btn.secondary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+        
+        .demo-btn.success {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+        
+        .demo-btn.warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+        
+        .demo-btn.danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .compliance-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .compliance-score {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .score-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+        
+        .score-bar {
+            background: #e9ecef;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .score-fill {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .violations-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .violation-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .violation-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .violation-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .feedback-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .feedback-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .feedback-stat {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e74c3c;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .chart-placeholder {
+            height: 200px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #2c3e50;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .back-button:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.3);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.error {
+            background: #e74c3c;
+        }
+        
+        .notification.warning {
+            background: #f39c12;
+        }
+        
+        .notification.info {
+            background: #3498db;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .demo-buttons {
+                flex-direction: column;
+            }
+            
+            .demo-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">
+        ← Back to Main
+    </a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>📊 Performance Tracking & Analytics Demo</h1>
+            <p>Test the comprehensive performance tracking, accessibility compliance, and user feedback systems</p>
+        </div>
+        
+        <!-- Performance Metrics -->
+        <div class="demo-section">
+            <h2>📈 Performance Metrics</h2>
+            <div class="metrics-grid" id="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="completion-rate">0%</div>
+                    <div class="metric-label">Completion Rate</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="efficiency">0</div>
+                    <div class="metric-label">Efficiency (tasks/min)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="interaction-success">0%</div>
+                    <div class="metric-label">Interaction Success</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-card">
+                    <div class="metric-value" id="average-task-time">0m</div>
+                    <div class="metric-label">Avg Task Time</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="total-distance">0</div>
+                    <div class="metric-label">Total Distance</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="session-duration">0m</div>
+                    <div class="metric-label">Session Duration</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Demo Controls -->
+        <div class="demo-section">
+            <h2>🎮 Demo Controls</h2>
+            <div class="demo-buttons">
+                <button class="demo-btn" onclick="simulateTaskCompletion()">Complete Task</button>
+                <button class="demo-btn secondary" onclick="simulateInteraction()">Record Interaction</button>
+                <button class="demo-btn success" onclick="simulateMovement()">Record Movement</button>
+                <button class="demo-btn warning" onclick="simulateError()">Simulate Error</button>
+                <button class="demo-btn danger" onclick="simulateFeedback()">Collect Feedback</button>
+                <button class="demo-btn" onclick="runComplianceCheck()">Check Compliance</button>
+                <button class="demo-btn secondary" onclick="exportData()">Export Data</button>
+                <button class="demo-btn success" onclick="openAnalyticsDashboard()">Open Dashboard</button>
+            </div>
+        </div>
+        
+        <!-- Accessibility Compliance -->
+        <div class="demo-section">
+            <h2>♿ Accessibility Compliance</h2>
+            <div class="compliance-section">
+                <div class="compliance-score">
+                    <div class="score-value" id="compliance-score">100%</div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="compliance-bar" style="width: 100%;"></div>
+                    </div>
+                    <div style="color: #6c757d; font-size: 0.9rem;">WCAG AA Level Compliance</div>
+                </div>
+                <div class="violations-list" id="violations-list">
+                    <div style="text-align: center; color: #6c757d; font-style: italic;">No violations detected</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Feedback -->
+        <div class="demo-section">
+            <h2>💬 User Feedback</h2>
+            <div class="feedback-section">
+                <div class="feedback-stats">
+                    <div class="feedback-stat">
+                        <div class="stat-value" id="total-feedback">0</div>
+                        <div class="stat-label">Total Feedback</div>
+                    </div>
+                    <div class="feedback-stat">
+                        <div class="stat-value" id="average-difficulty">0</div>
+                        <div class="stat-label">Avg Difficulty</div>
+                    </div>
+                    <div class="feedback-stat">
+                        <div class="stat-value" id="satisfaction-rate">0%</div>
+                        <div class="stat-label">Satisfaction</div>
+                    </div>
+                    <div class="feedback-stat">
+                        <div class="stat-value" id="frustration-level">0</div>
+                        <div class="stat-label">Frustration</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Performance Charts -->
+        <div class="demo-section">
+            <h2>📊 Performance Charts</h2>
+            <div class="chart-container">
+                <div class="chart-title">Performance Trends</div>
+                <div class="chart-placeholder" id="performance-chart">
+                    Performance trends chart will appear here
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Accessibility Metrics</div>
+                <div class="chart-placeholder" id="accessibility-chart">
+                    Accessibility metrics chart will appear here
+                </div>
+            </div>
+        </div>
+        
+        <!-- Historical Data -->
+        <div class="demo-section">
+            <h2>📚 Historical Data</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="total-sessions">0</div>
+                    <div class="metric-label">Total Sessions</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="total-tasks">0</div>
+                    <div class="metric-label">Total Tasks</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="total-interactions">0</div>
+                    <div class="metric-label">Total Interactions</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="improvement-trend">0%</div>
+                    <div class="metric-label">Improvement Trend</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/user-profile.js"></script>
+    <script src="js/performance-tracking.js"></script>
+    <script src="js/accessibility-compliance.js"></script>
+    <script src="js/user-feedback.js"></script>
+    <script src="js/analytics-dashboard.js"></script>
+    
+    <script>
+        // Initialize systems
+        let userProfile, performanceTracking, accessibilityCompliance, userFeedbackSystem, analyticsDashboard;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSystems();
+            updateDisplay();
+            setupEventListeners();
+        });
+        
+        function initializeSystems() {
+            // Initialize user profile system
+            userProfile = new UserProfile();
+            
+            // Initialize performance tracking
+            performanceTracking = new PerformanceTracking(userProfile, null);
+            
+            // Initialize accessibility compliance
+            accessibilityCompliance = new AccessibilityCompliance(performanceTracking);
+            
+            // Initialize user feedback system
+            userFeedbackSystem = new UserFeedbackSystem(userProfile, performanceTracking, null);
+            
+            // Initialize analytics dashboard
+            analyticsDashboard = new AnalyticsDashboard(performanceTracking, accessibilityCompliance, userFeedbackSystem);
+            
+            console.log('Demo systems initialized');
+        }
+        
+        function setupEventListeners() {
+            // Listen for performance updates
+            document.addEventListener('trendAnalysisCompleted', function(event) {
+                updateDisplay();
+                showNotification('Trend analysis completed', 'success');
+            });
+            
+            // Listen for compliance updates
+            document.addEventListener('complianceChecked', function(event) {
+                updateComplianceDisplay();
+                showNotification('Compliance check completed', 'info');
+            });
+            
+            // Listen for feedback updates
+            document.addEventListener('taskFeedbackCollected', function(event) {
+                updateFeedbackDisplay();
+                showNotification('Feedback collected', 'success');
+            });
+        }
+        
+        function updateDisplay() {
+            updatePerformanceMetrics();
+            updateComplianceDisplay();
+            updateFeedbackDisplay();
+            updateHistoricalData();
+        }
+        
+        function updatePerformanceMetrics() {
+            const summary = performanceTracking?.getPerformanceSummary();
+            if (summary) {
+                document.getElementById('completion-rate').textContent = 
+                    (summary.performance?.completionRate * 100 || 0).toFixed(1) + '%';
+                document.getElementById('efficiency').textContent = 
+                    (summary.performance?.efficiency || 0).toFixed(1);
+                document.getElementById('interaction-success').textContent = 
+                    (summary.performance?.interactionSuccessRate * 100 || 0).toFixed(1) + '%';
+                document.getElementById('average-task-time').textContent = 
+                    formatDuration(summary.performance?.averageTaskTime || 0);
+                document.getElementById('total-distance').textContent = 
+                    (summary.performance?.totalDistance || 0).toFixed(1);
+                document.getElementById('session-duration').textContent = 
+                    formatDuration(summary.session?.duration || 0);
+            }
+        }
+        
+        function updateComplianceDisplay() {
+            const summary = accessibilityCompliance?.getComplianceSummary();
+            if (summary) {
+                document.getElementById('compliance-score').textContent = 
+                    summary.score.toFixed(1) + '%';
+                document.getElementById('compliance-bar').style.width = summary.score + '%';
+                
+                // Update violations list
+                const violationsList = document.getElementById('violations-list');
+                if (summary.violationCount > 0) {
+                    violationsList.innerHTML = summary.recentViolations.map(violation => `
+                        <div class="violation-item">
+                            <div class="violation-title">${violation.rule?.name || 'Unknown Rule'}</div>
+                            <div class="violation-description">${violation.violations?.join(', ') || 'No details'}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    violationsList.innerHTML = '<div style="text-align: center; color: #6c757d; font-style: italic;">No violations detected</div>';
+                }
+            }
+        }
+        
+        function updateFeedbackDisplay() {
+            const summary = userFeedbackSystem?.getFeedbackSummary();
+            if (summary) {
+                document.getElementById('total-feedback').textContent = summary.totalFeedback || 0;
+                document.getElementById('average-difficulty').textContent = 
+                    (summary.averageDifficulty || 0).toFixed(1);
+                document.getElementById('satisfaction-rate').textContent = 
+                    ((summary.averageDifficulty || 0) * 20).toFixed(0) + '%';
+                document.getElementById('frustration-level').textContent = 
+                    (5 - (summary.averageDifficulty || 0)).toFixed(1);
+            }
+        }
+        
+        function updateHistoricalData() {
+            const summary = performanceTracking?.getHistoricalSummary();
+            if (summary) {
+                document.getElementById('total-sessions').textContent = summary.totalSessions || 0;
+                document.getElementById('total-tasks').textContent = 
+                    Math.floor((summary.totalSessions || 0) * 3.5); // Estimate
+                document.getElementById('total-interactions').textContent = 
+                    Math.floor((summary.totalSessions || 0) * 25); // Estimate
+                document.getElementById('improvement-trend').textContent = 
+                    (summary.averageCompletionRate * 100 || 0).toFixed(1) + '%';
+            }
+        }
+        
+        // Demo functions
+        function simulateTaskCompletion() {
+            const task = {
+                id: 'demo_task_' + Date.now(),
+                name: 'Demo Task',
+                difficulty: 'medium',
+                assistanceLevel: 'moderate',
+                duration: Math.floor(Math.random() * 300000) + 60000, // 1-6 minutes
+                success: true,
+                errors: Math.floor(Math.random() * 3),
+                interactions: Math.floor(Math.random() * 20) + 5
+            };
+            
+            performanceTracking.recordTaskCompletion({ task });
+            showNotification('Task completed successfully', 'success');
+        }
+        
+        function simulateInteraction() {
+            const interaction = {
+                type: 'click',
+                target: 'demo_button',
+                position: { x: 100, y: 200 },
+                success: Math.random() > 0.2, // 80% success rate
+                duration: Math.floor(Math.random() * 2000) + 500,
+                attempts: 1,
+                method: 'click'
+            };
+            
+            performanceTracking.recordInteraction(interaction);
+            showNotification('Interaction recorded', 'info');
+        }
+        
+        function simulateMovement() {
+            const movement = {
+                position: { 
+                    x: Math.random() * 1000, 
+                    y: Math.random() * 1000, 
+                    z: Math.random() * 1000 
+                },
+                rotation: { 
+                    x: Math.random() * 360, 
+                    y: Math.random() * 360, 
+                    z: Math.random() * 360 
+                },
+                velocity: { 
+                    x: Math.random() * 10, 
+                    y: Math.random() * 10, 
+                    z: Math.random() * 10 
+                },
+                method: 'navigation',
+                duration: Math.floor(Math.random() * 5000) + 1000,
+                distance: Math.random() * 100
+            };
+            
+            performanceTracking.recordMovement(movement);
+            showNotification('Movement recorded', 'info');
+        }
+        
+        function simulateError() {
+            const error = {
+                type: 'interaction_error',
+                message: 'Demo error occurred',
+                context: { task: 'Demo Task' },
+                timestamp: Date.now()
+            };
+            
+            performanceTracking.recordTaskError(error);
+            showNotification('Error simulated', 'warning');
+        }
+        
+        function simulateFeedback() {
+            const feedback = {
+                type: 'task_completion',
+                timestamp: Date.now(),
+                taskId: 'demo_task',
+                taskName: 'Demo Task',
+                responses: {
+                    difficulty: Math.floor(Math.random() * 5) + 1,
+                    frustration: Math.floor(Math.random() * 5) + 1,
+                    satisfaction: Math.floor(Math.random() * 5) + 1,
+                    assistance: Math.floor(Math.random() * 5) + 1
+                }
+            };
+            
+            userFeedbackSystem.feedbackData.push(feedback);
+            userFeedbackSystem.difficultyRatings.push({
+                taskId: 'demo_task',
+                difficulty: feedback.responses.difficulty,
+                timestamp: Date.now()
+            });
+            
+            showNotification('Feedback collected', 'success');
+        }
+        
+        function runComplianceCheck() {
+            accessibilityCompliance.runComplianceCheck();
+            showNotification('Compliance check running', 'info');
+        }
+        
+        function exportData() {
+            const performanceData = performanceTracking?.exportPerformanceData();
+            const complianceData = accessibilityCompliance?.exportComplianceReport();
+            const feedbackData = userFeedbackSystem?.exportFeedbackData();
+            
+            const exportData = {
+                performance: performanceData,
+                compliance: complianceData,
+                feedback: feedbackData,
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'analytics-export.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification('Data exported successfully', 'success');
+        }
+        
+        function openAnalyticsDashboard() {
+            analyticsDashboard.openDashboard();
+        }
+        
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // Hide notification
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        function formatDuration(milliseconds) {
+            const seconds = Math.floor(milliseconds / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes % 60}m`;
+            } else if (minutes > 0) {
+                return `${minutes}m ${seconds % 60}s`;
+            } else {
+                return `${seconds}s`;
+            }
+        }
+    </script>
+</body>
+</html>

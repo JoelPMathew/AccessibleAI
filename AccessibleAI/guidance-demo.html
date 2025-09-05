@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Guidance & Cues Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .demo-section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .demo-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .demo-section p {
+            color: #6c757d;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .task-demo-area {
+            min-height: 400px;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            background: white;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .demo-object {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-radius: 10px;
+            margin: 20px;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .demo-object:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.3);
+        }
+
+        .demo-object.highlighted {
+            animation: guidancePulse 1s ease-in-out infinite;
+            border: 3px solid #e74c3c;
+            box-shadow: 0 0 0 10px rgba(231, 76, 60, 0.1);
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .control-button {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .control-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(230, 126, 34, 0.3);
+        }
+
+        .control-button:active {
+            transform: translateY(0);
+        }
+
+        .control-button:disabled {
+            background: #e9ecef;
+            color: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-panel {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .status-panel h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .status-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .status-item .label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .status-item .value {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .difficulty-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .difficulty-option {
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            background: white;
+        }
+
+        .difficulty-option.active {
+            border-color: #e67e22;
+            background: #fef5e7;
+        }
+
+        .difficulty-option h4 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .difficulty-option p {
+            color: #6c757d;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        .assistance-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .assistance-option {
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            background: white;
+        }
+
+        .assistance-option.active {
+            border-color: #e67e22;
+            background: #fef5e7;
+        }
+
+        .assistance-option h4 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .assistance-option p {
+            color: #6c757d;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        .feature-toggles {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .feature-toggle {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .feature-toggle input[type="checkbox"] {
+            transform: scale(1.2);
+        }
+
+        .feature-toggle .label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .feature-toggle .description {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .task-progress {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #e67e22, #d35400);
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        @keyframes guidancePulse {
+            0%, 100% { 
+                border-color: #e74c3c;
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4);
+            }
+            50% { 
+                border-color: #f39c12;
+                box-shadow: 0 0 0 10px rgba(243, 156, 18, 0.1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .demo-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='index.html'">
+        🏠 Back to Library
+    </button>
+
+    <div class="container">
+        <div class="header">
+            <h1>🎯 User Guidance & Cues Demo</h1>
+            <p>Experience object highlighting, narration, and adjustable difficulty levels</p>
+        </div>
+
+        <div class="content">
+            <!-- Current Status -->
+            <div class="demo-section">
+                <h2>📊 Current Status</h2>
+                <p>Monitor the current state of the guidance system and active tasks.</p>
+                <div class="status-panel">
+                    <h3>System Status</h3>
+                    <div class="status-grid" id="status-grid">
+                        <!-- Status items will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task Demo Area -->
+            <div class="demo-section">
+                <h2>🎮 Interactive Task Demo</h2>
+                <p>Click on the highlighted objects to complete the task steps. Watch how the guidance system provides visual and audio feedback.</p>
+                <div class="task-demo-area" id="task-demo-area">
+                    <div class="demo-object" id="object1" data-step="1">Step 1<br>Click Me</div>
+                    <div class="demo-object" id="object2" data-step="2">Step 2<br>Click Me</div>
+                    <div class="demo-object" id="object3" data-step="3">Step 3<br>Click Me</div>
+                    <div class="demo-object" id="object4" data-step="4">Step 4<br>Click Me</div>
+                </div>
+                <div class="task-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text" id="progress-text">Task Progress: 0/4 steps completed</div>
+                </div>
+            </div>
+
+            <!-- Difficulty Level -->
+            <div class="demo-section">
+                <h2>⚡ Difficulty Level</h2>
+                <p>Adjust the difficulty level to change highlighting duration, narration speed, and assistance level.</p>
+                <div class="difficulty-selector" id="difficulty-selector">
+                    <div class="difficulty-option" data-level="easy">
+                        <h4>Easy</h4>
+                        <p>Maximum assistance</p>
+                    </div>
+                    <div class="difficulty-option active" data-level="medium">
+                        <h4>Medium</h4>
+                        <p>Balanced assistance</p>
+                    </div>
+                    <div class="difficulty-option" data-level="hard">
+                        <h4>Hard</h4>
+                        <p>Minimal assistance</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assistance Level -->
+            <div class="demo-section">
+                <h2>🆘 Assistance Level</h2>
+                <p>Choose how much guidance and assistance you want during tasks.</p>
+                <div class="assistance-selector" id="assistance-selector">
+                    <div class="assistance-option" data-level="minimal">
+                        <h4>Minimal</h4>
+                        <p>Basic highlighting only</p>
+                    </div>
+                    <div class="assistance-option active" data-level="moderate">
+                        <h4>Moderate</h4>
+                        <p>Highlighting + text</p>
+                    </div>
+                    <div class="assistance-option" data-level="full">
+                        <h4>Full</h4>
+                        <p>Complete guidance</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Toggles -->
+            <div class="demo-section">
+                <h2>🎛️ Feature Toggles</h2>
+                <p>Enable or disable specific guidance features to customize your experience.</p>
+                <div class="feature-toggles">
+                    <label class="feature-toggle">
+                        <input type="checkbox" id="highlighting-toggle" checked>
+                        <div>
+                            <div class="label">Object Highlighting</div>
+                            <div class="description">Highlight objects and areas for tasks</div>
+                        </div>
+                    </label>
+                    <label class="feature-toggle">
+                        <input type="checkbox" id="text-instructions-toggle" checked>
+                        <div>
+                            <div class="label">Text Instructions</div>
+                            <div class="description">Show text-based instructions for tasks</div>
+                        </div>
+                    </label>
+                    <label class="feature-toggle">
+                        <input type="checkbox" id="narration-toggle" checked>
+                        <div>
+                            <div class="label">Voice Narration</div>
+                            <div class="description">Play audio narration for instructions</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="demo-section">
+                <h2>🎮 Demo Controls</h2>
+                <p>Test different aspects of the guidance system with these interactive controls.</p>
+                <div class="controls">
+                    <button class="control-button" id="start-demo-task" onclick="startDemoTask()">
+                        🚀 Start Demo Task
+                    </button>
+                    <button class="control-button" id="highlight-object" onclick="highlightRandomObject()">
+                        🎯 Highlight Object
+                    </button>
+                    <button class="control-button" id="play-narration" onclick="playDemoNarration()">
+                        🎤 Play Narration
+                    </button>
+                    <button class="control-button" id="show-instructions" onclick="showDemoInstructions()">
+                        📋 Show Instructions
+                    </button>
+                    <button class="control-button" id="reset-demo" onclick="resetDemo()">
+                        🔄 Reset Demo
+                    </button>
+                    <button class="control-button" id="stop-guidance" onclick="stopGuidance()">
+                        ⏹️ Stop Guidance
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Guidance System -->
+    <script src="js/user-guidance.js"></script>
+    <script src="js/guidance-config.js"></script>
+    <script src="js/task-definitions.js"></script>
+
+    <script>
+        // Demo-specific variables
+        let currentStep = 0;
+        let totalSteps = 4;
+        let isTaskActive = false;
+        let guidanceSystem = null;
+
+        // Initialize demo
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDemo();
+        });
+
+        function initializeDemo() {
+            // Wait for guidance system to be ready
+            if (window.UserGuidanceSystem) {
+                setupDemo();
+            } else {
+                setTimeout(initializeDemo, 100);
+            }
+        }
+
+        function setupDemo() {
+            // Initialize guidance system
+            guidanceSystem = new UserGuidanceSystem();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Update status display
+            updateStatusDisplay();
+            
+            // Set up demo object interactions
+            setupDemoObjectInteractions();
+            
+            console.log('Guidance demo initialized');
+        }
+
+        function setupEventListeners() {
+            // Listen for guidance events
+            document.addEventListener('taskStarted', function(event) {
+                console.log('Task started:', event.detail);
+                updateStatusDisplay();
+            });
+
+            document.addEventListener('taskCompleted', function(event) {
+                console.log('Task completed:', event.detail);
+                isTaskActive = false;
+                updateStatusDisplay();
+                showCompletionMessage();
+            });
+
+            document.addEventListener('taskStepCompleted', function(event) {
+                console.log('Task step completed:', event.detail);
+                updateStatusDisplay();
+            });
+
+            document.addEventListener('objectHighlighted', function(event) {
+                console.log('Object highlighted:', event.detail);
+                updateStatusDisplay();
+            });
+
+            // Difficulty level selection
+            document.querySelectorAll('.difficulty-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const level = this.dataset.level;
+                    setDifficultyLevel(level);
+                    updateDifficultySelection();
+                });
+            });
+
+            // Assistance level selection
+            document.querySelectorAll('.assistance-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const level = this.dataset.level;
+                    setAssistanceLevel(level);
+                    updateAssistanceSelection();
+                });
+            });
+
+            // Feature toggles
+            document.getElementById('highlighting-toggle').addEventListener('change', function() {
+                guidanceSystem.toggleHighlighting();
+                updateStatusDisplay();
+            });
+
+            document.getElementById('text-instructions-toggle').addEventListener('change', function() {
+                guidanceSystem.toggleTextInstructions();
+                updateStatusDisplay();
+            });
+
+            document.getElementById('narration-toggle').addEventListener('change', function() {
+                guidanceSystem.toggleNarration();
+                updateStatusDisplay();
+            });
+        }
+
+        function setupDemoObjectInteractions() {
+            document.querySelectorAll('.demo-object').forEach(obj => {
+                obj.addEventListener('click', function() {
+                    const step = parseInt(this.dataset.step);
+                    handleObjectClick(this, step);
+                });
+            });
+        }
+
+        function handleObjectClick(object, step) {
+            if (isTaskActive && step === currentStep + 1) {
+                // Complete current step
+                currentStep++;
+                updateProgress();
+                
+                // Visual feedback
+                object.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+                object.innerHTML = `✓ Step ${step}<br>Completed!`;
+                
+                // Check if task is complete
+                if (currentStep >= totalSteps) {
+                    completeTask();
+                } else {
+                    // Highlight next object
+                    setTimeout(() => {
+                        highlightNextObject();
+                    }, 1000);
+                }
+            } else if (!isTaskActive) {
+                // Start task if not active
+                startDemoTask();
+            }
+        }
+
+        function startDemoTask() {
+            if (isTaskActive) return;
+            
+            isTaskActive = true;
+            currentStep = 0;
+            updateProgress();
+            
+            // Reset all objects
+            document.querySelectorAll('.demo-object').forEach(obj => {
+                obj.style.background = 'linear-gradient(135deg, #3498db, #2980b9)';
+                obj.innerHTML = `Step ${obj.dataset.step}<br>Click Me`;
+                obj.classList.remove('highlighted');
+            });
+            
+            // Highlight first object
+            highlightNextObject();
+            
+            // Show instructions
+            showDemoInstructions();
+            
+            // Play narration
+            playDemoNarration();
+            
+            updateStatusDisplay();
+        }
+
+        function highlightNextObject() {
+            if (currentStep < totalSteps) {
+                const nextObject = document.querySelector(`[data-step="${currentStep + 1}"]`);
+                if (nextObject) {
+                    // Clear previous highlights
+                    document.querySelectorAll('.demo-object').forEach(obj => {
+                        obj.classList.remove('highlighted');
+                    });
+                    
+                    // Highlight next object
+                    nextObject.classList.add('highlighted');
+                    
+                    // Auto-remove highlight after duration
+                    const duration = getHighlightDuration();
+                    setTimeout(() => {
+                        nextObject.classList.remove('highlighted');
+                    }, duration);
+                }
+            }
+        }
+
+        function highlightRandomObject() {
+            const objects = document.querySelectorAll('.demo-object');
+            const randomObject = objects[Math.floor(Math.random() * objects.length)];
+            
+            // Clear previous highlights
+            document.querySelectorAll('.demo-object').forEach(obj => {
+                obj.classList.remove('highlighted');
+            });
+            
+            // Highlight random object
+            randomObject.classList.add('highlighted');
+            
+            // Auto-remove highlight after duration
+            const duration = getHighlightDuration();
+            setTimeout(() => {
+                randomObject.classList.remove('highlighted');
+            }, duration);
+        }
+
+        function playDemoNarration() {
+            const messages = [
+                'Welcome to the guidance system demo. Click on the highlighted objects to complete the task.',
+                'Great job! You are making progress through the task.',
+                'You are doing well. Continue following the highlighted objects.',
+                'Excellent work! You are almost finished with the task.'
+            ];
+            
+            const message = messages[currentStep] || messages[0];
+            
+            if (guidanceSystem && guidanceSystem.narrationEnabled) {
+                guidanceSystem.playNarration(message);
+            }
+        }
+
+        function showDemoInstructions() {
+            const instructions = [
+                'Step 1: Click on the first highlighted object to begin.',
+                'Step 2: Click on the second highlighted object to continue.',
+                'Step 3: Click on the third highlighted object to proceed.',
+                'Step 4: Click on the final highlighted object to complete the task.'
+            ];
+            
+            const instruction = instructions[currentStep] || instructions[0];
+            
+            if (guidanceSystem && guidanceSystem.textInstructionsEnabled) {
+                // Create instruction overlay
+                const overlay = document.createElement('div');
+                overlay.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(0, 0, 0, 0.9);
+                    color: white;
+                    padding: 20px 30px;
+                    border-radius: 12px;
+                    z-index: 1000;
+                    font-size: 16px;
+                    font-weight: 600;
+                    text-align: center;
+                    max-width: 400px;
+                `;
+                overlay.textContent = instruction;
+                document.body.appendChild(overlay);
+                
+                // Auto-remove after 3 seconds
+                setTimeout(() => {
+                    overlay.remove();
+                }, 3000);
+            }
+        }
+
+        function completeTask() {
+            isTaskActive = false;
+            
+            // Show completion message
+            showCompletionMessage();
+            
+            // Reset all objects
+            document.querySelectorAll('.demo-object').forEach(obj => {
+                obj.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+                obj.innerHTML = `✓ Step ${obj.dataset.step}<br>Completed!`;
+                obj.classList.remove('highlighted');
+            });
+            
+            updateStatusDisplay();
+        }
+
+        function showCompletionMessage() {
+            const message = document.createElement('div');
+            message.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #27ae60, #2ecc71);
+                color: white;
+                padding: 30px;
+                border-radius: 15px;
+                z-index: 1000;
+                font-size: 20px;
+                font-weight: 600;
+                text-align: center;
+                box-shadow: 0 10px 30px rgba(39, 174, 96, 0.3);
+            `;
+            message.innerHTML = `
+                <div style="font-size: 32px; margin-bottom: 10px;">🎉</div>
+                <div>Task Completed Successfully!</div>
+            `;
+            document.body.appendChild(message);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                message.remove();
+            }, 3000);
+        }
+
+        function resetDemo() {
+            isTaskActive = false;
+            currentStep = 0;
+            updateProgress();
+            
+            // Reset all objects
+            document.querySelectorAll('.demo-object').forEach(obj => {
+                obj.style.background = 'linear-gradient(135deg, #3498db, #2980b9)';
+                obj.innerHTML = `Step ${obj.dataset.step}<br>Click Me`;
+                obj.classList.remove('highlighted');
+            });
+            
+            updateStatusDisplay();
+        }
+
+        function stopGuidance() {
+            if (guidanceSystem) {
+                guidanceSystem.stopGuidance();
+            }
+            resetDemo();
+        }
+
+        function setDifficultyLevel(level) {
+            if (guidanceSystem) {
+                guidanceSystem.setDifficultyLevel(level);
+            }
+        }
+
+        function setAssistanceLevel(level) {
+            if (guidanceSystem) {
+                guidanceSystem.setAssistanceLevel(level);
+            }
+        }
+
+        function updateDifficultySelection() {
+            document.querySelectorAll('.difficulty-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            
+            const currentLevel = guidanceSystem ? guidanceSystem.difficultyLevel : 'medium';
+            const activeOption = document.querySelector(`[data-level="${currentLevel}"]`);
+            if (activeOption) {
+                activeOption.classList.add('active');
+            }
+        }
+
+        function updateAssistanceSelection() {
+            document.querySelectorAll('.assistance-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            
+            const currentLevel = guidanceSystem ? guidanceSystem.assistanceLevel : 'moderate';
+            const activeOption = document.querySelector(`[data-level="${currentLevel}"]`);
+            if (activeOption) {
+                activeOption.classList.add('active');
+            }
+        }
+
+        function updateProgress() {
+            const percentage = (currentStep / totalSteps) * 100;
+            document.getElementById('progress-fill').style.width = `${percentage}%`;
+            document.getElementById('progress-text').textContent = `Task Progress: ${currentStep}/${totalSteps} steps completed`;
+        }
+
+        function updateStatusDisplay() {
+            const statusGrid = document.getElementById('status-grid');
+            if (!statusGrid || !guidanceSystem) return;
+            
+            const status = guidanceSystem.getStatus();
+            
+            statusGrid.innerHTML = `
+                <div class="status-item">
+                    <div class="label">System Status</div>
+                    <div class="value">${status.isActive ? '🟢 Active' : '🔴 Inactive'}</div>
+                </div>
+                <div class="status-item">
+                    <div class="label">Current Task</div>
+                    <div class="value">${status.currentTask ? status.currentTask.name : 'None'}</div>
+                </div>
+                <div class="status-item">
+                    <div class="label">Progress</div>
+                    <div class="value">${status.taskProgress}/${status.maxTaskProgress}</div>
+                </div>
+                <div class="status-item">
+                    <div class="label">Difficulty</div>
+                    <div class="value">${status.difficultyLevel}</div>
+                </div>
+                <div class="status-item">
+                    <div class="label">Assistance</div>
+                    <div class="value">${status.assistanceLevel}</div>
+                </div>
+                <div class="status-item">
+                    <div class="label">Highlighting</div>
+                    <div class="value">${status.highlightingEnabled ? '✅' : '❌'}</div>
+                </div>
+                <div class="status-item">
+                    <div class="label">Narration</div>
+                    <div class="value">${status.narrationEnabled ? '✅' : '❌'}</div>
+                </div>
+                <div class="status-item">
+                    <div class="label">Text Instructions</div>
+                    <div class="value">${status.textInstructionsEnabled ? '✅' : '❌'}</div>
+                </div>
+            `;
+        }
+
+        function getHighlightDuration() {
+            if (!guidanceSystem) return 3000;
+            
+            const difficulty = guidanceSystem.difficultyLevel;
+            const durations = {
+                easy: 5000,
+                medium: 3000,
+                hard: 1500
+            };
+            
+            return durations[difficulty] || 3000;
+        }
+    </script>
+</body>
+</html>

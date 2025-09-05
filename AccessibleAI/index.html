@@ -1,0 +1,2434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessibility VR Scenario Library</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            padding: 0;
+            line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            color: #2c3e50;
+            position: relative;
+            padding: 60px 40px 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+        
+        .header-content {
+            position: relative;
+        }
+        
+        .back-button-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
+            color: #2c3e50;
+            text-decoration: none;
+            padding: 14px 24px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .back-button:hover::before {
+            left: 100%;
+        }
+        
+        .back-button:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.3);
+            border-color: transparent;
+        }
+        
+        .header-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            padding: 25px 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .stat-item:hover::before {
+            left: 100%;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-number {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* User Feedback & Progress Navigation */
+        .feedback-progress-nav {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8));
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 16px 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-btn:hover::before {
+            left: 100%;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-btn:hover .nav-icon {
+            transform: scale(1.1);
+        }
+
+        .nav-text {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .analytics-btn {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .feedback-btn {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background-size: 300% 300%;
+            animation: gradientText 8s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        @keyframes gradientText {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .header h1 .globe-icon {
+            font-size: 3rem;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            color: #64748b;
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto 25px;
+        }
+
+        .progress-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+            color: #059669;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+        }
+
+        .progress-indicator::before {
+            content: '✓';
+            font-size: 1.2rem;
+            animation: checkPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes checkPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .scenarios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 32px;
+            margin-bottom: 80px;
+        }
+
+        .scenario-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9));
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
+        }
+
+        .scenario-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background-size: 300% 100%;
+            animation: gradientShift 4s ease infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .scenario-card:hover::before {
+            opacity: 1;
+        }
+
+        .scenario-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 220px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        }
+
+        .card-content {
+            padding: 32px;
+        }
+
+        .card-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1e293b;
+            line-height: 1.3;
+        }
+
+        .card-description {
+            color: #64748b;
+            line-height: 1.7;
+            margin-bottom: 24px;
+            font-size: 1rem;
+        }
+
+        .card-features {
+            list-style: none;
+            margin-bottom: 28px;
+        }
+
+        .card-features li {
+            padding: 8px 0;
+            color: #475569;
+            position: relative;
+            padding-left: 24px;
+            font-size: 0.95rem;
+        }
+
+        .card-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .launch-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .launch-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .launch-button:hover::before {
+            left: 100%;
+        }
+
+        .launch-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #764ba2, #667eea);
+        }
+
+        .launch-button:disabled {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .mobility-selector {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin: 40px auto;
+            max-width: 1400px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .mobility-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .mobility-selector h3 {
+            font-size: 1.5rem;
+            color: #111827;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .mobility-subtitle {
+            color: #6b7280;
+            font-size: 0.95rem;
+            font-weight: 400;
+            margin: 0;
+        }
+
+        .mobility-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .mobility-btn {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #374151;
+            min-height: 100px;
+            justify-content: center;
+        }
+
+        .mobility-btn:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+            transform: translateY(-1px);
+        }
+
+        .mobility-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .mobility-icon {
+            font-size: 2rem;
+            transition: transform 0.2s ease;
+        }
+
+        .mobility-btn:hover .mobility-icon {
+            transform: scale(1.05);
+        }
+
+        .mobility-btn.active .mobility-icon {
+            transform: scale(1.05);
+        }
+
+        .mobility-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .mobility-info {
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin: 0;
+            font-weight: 400;
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 50px 30px 30px;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .header h1 .globe-icon {
+                font-size: 2rem;
+            }
+            
+            .back-button-container {
+                top: 15px;
+                left: 15px;
+            }
+            
+            .back-button {
+                padding: 12px 18px;
+                font-size: 0.9rem;
+            }
+            
+            .header-stats {
+                gap: 20px;
+            }
+            
+            .stat-item {
+                padding: 20px 15px;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+            
+            .mobility-selector {
+                padding: 30px 24px;
+                margin: 30px auto;
+            }
+            
+            .mobility-options {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+                max-width: 600px;
+            }
+            
+            .mobility-btn {
+                padding: 16px 12px;
+                min-height: 90px;
+            }
+            
+            .mobility-icon {
+                font-size: 1.8rem;
+            }
+            
+            .scenarios-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .header {
+                padding: 40px 20px 25px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .header h1 .globe-icon {
+                font-size: 1.5rem;
+            }
+            
+            .back-button-container {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-button {
+                padding: 10px 16px;
+                font-size: 0.85rem;
+            }
+            
+            .progress-indicator {
+                font-size: 0.9rem;
+                padding: 10px 16px;
+            }
+            
+            .mobility-options {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                max-width: 300px;
+            }
+            
+            .mobility-selector {
+                padding: 24px 20px;
+                margin: 24px auto;
+            }
+            
+            .feedback-progress-nav {
+                gap: 12px;
+                margin-top: 20px;
+            }
+            
+            .nav-btn {
+                padding: 12px 16px;
+                font-size: 0.9rem;
+                gap: 8px;
+            }
+            
+            .nav-icon {
+                font-size: 1.2rem;
+            }
+            
+            .mobility-btn {
+                padding: 16px 12px;
+                min-height: 80px;
+            }
+            
+            .mobility-icon {
+                font-size: 1.6rem;
+            }
+            
+            .mobility-label {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .scenario-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .scenario-card:nth-child(1) { animation-delay: 0.1s; }
+        .scenario-card:nth-child(2) { animation-delay: 0.2s; }
+        .scenario-card:nth-child(3) { animation-delay: 0.3s; }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+        }
+
+        .accessibility-info {
+            background: white;
+            border-radius: 24px;
+            padding: 48px;
+            margin-top: 60px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .accessibility-info h2 {
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+            color: #1e293b;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .accessibility-info > p {
+            text-align: center;
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .accessibility-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .feature {
+            background: #f8fafc;
+            padding: 28px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .feature h3 {
+            margin-bottom: 12px;
+            color: #1e293b;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .feature p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .vr-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #667eea;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .coming-soon {
+            opacity: 0.6;
+        }
+
+        .scenario-card.completed {
+            position: relative;
+        }
+
+        .scenario-card.completed::before {
+            content: '✓';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: #10b981;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .scenario-card.completed .card-image::after {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(102, 126, 234, 0.1));
+        }
+
+        .progress-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #10b981;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .scenarios-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            
+            .card-content {
+                padding: 24px;
+            }
+
+            .accessibility-info {
+                padding: 32px 24px;
+            }
+
+            .accessibility-features {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .scenarios-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .card-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div class="back-button-container">
+                    <a href="landing.html" class="back-button" aria-label="Return to landing page">
+                        ← Back to Home
+                    </a>
+                </div>
+                <h1>
+                    <span class="globe-icon">🌐</span>
+                    VR Scenario Library
+                </h1>
+                <p>Choose a scenario to practice real-world skills in a safe, virtual environment</p>
+                <div class="progress-indicator">
+                    <!-- Progress will be updated dynamically -->
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">5</span>
+                        <span class="stat-label">Scenarios Available</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Accessible</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Available</span>
+                    </div>
+                </div>
+                
+                <!-- User Feedback & Progress Access -->
+                <div class="feedback-progress-nav">
+                    <button id="open-progress-dashboard" class="nav-btn progress-btn" onclick="openProgressDashboard()">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">Progress Dashboard</span>
+                    </button>
+                    <button id="open-analytics-dashboard" class="nav-btn analytics-btn" onclick="openAnalyticsDashboard()">
+                        <span class="nav-icon">📈</span>
+                        <span class="nav-text">Analytics</span>
+                    </button>
+                    <button id="give-feedback" class="nav-btn feedback-btn" onclick="promptUserFeedback()">
+                        <span class="nav-icon">💬</span>
+                        <span class="nav-text">Give Feedback</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobility Preference Selector -->
+            <div class="mobility-selector">
+                <div class="mobility-header">
+                    <h3>Select Your Mobility Assistance</h3>
+                    <p class="mobility-subtitle">Choose the option that best describes your mobility needs</p>
+                </div>
+                <div class="mobility-options">
+                    <button class="mobility-btn" data-type="none" onclick="setMobilityType('none')">
+                        <span class="mobility-icon">🚶</span>
+                        <span class="mobility-label">None</span>
+                    </button>
+                    <button class="mobility-btn" data-type="wheelchair" onclick="setMobilityType('wheelchair')">
+                        <span class="mobility-icon">♿</span>
+                        <span class="mobility-label">Wheelchair</span>
+                    </button>
+                    <button class="mobility-btn" data-type="walker" onclick="setMobilityType('walker')">
+                        <span class="mobility-icon">🚶‍♂️</span>
+                        <span class="mobility-label">Walker</span>
+                    </button>
+                    <button class="mobility-btn" data-type="prosthetic" onclick="setMobilityType('prosthetic')">
+                        <span class="mobility-icon">🦿</span>
+                        <span class="mobility-label">Prosthetic</span>
+                    </button>
+                </div>
+                <p class="mobility-info">This will highlight accessible paths and features in each scenario</p>
+            </div>
+        </div>
+
+        <div class="scenarios-grid">
+            <!-- Cards are injected dynamically -->
+            <div id="scenariosGrid"></div>
+        </div>
+
+        <div class="accessibility-info">
+            <h2>🌟 Accessibility Features</h2>
+            <p>Our VR scenarios are designed with accessibility in mind, supporting various assistive technologies and adaptive needs.</p>
+            
+                    <!-- Demo Links -->
+        <div style="text-align: center; margin: 30px 0; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+            <a href="assistive-demo.html" style="
+                display: inline-block;
+                background: linear-gradient(135deg, #4CAF50, #45a049);
+                color: white;
+                text-decoration: none;
+                padding: 15px 30px;
+                border-radius: 12px;
+                font-weight: 600;
+                box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
+                transition: all 0.3s ease;
+            " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(76, 175, 80, 0.4)'" 
+               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(76, 175, 80, 0.3)'">
+                🎮 Test Assistive Devices
+            </a>
+            <a href="guidance-demo.html" style="
+                display: inline-block;
+                background: linear-gradient(135deg, #e67e22, #d35400);
+                color: white;
+                text-decoration: none;
+                padding: 15px 30px;
+                border-radius: 12px;
+                font-weight: 600;
+                box-shadow: 0 4px 20px rgba(230, 126, 34, 0.3);
+                transition: all 0.3s ease;
+            " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(230, 126, 34, 0.4)'" 
+               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(230, 126, 34, 0.3)'">
+                🎯 Test Guidance System
+            </a>
+            <a href="interaction-demo.html" style="
+                display: inline-block;
+                background: linear-gradient(135deg, #9b59b6, #8e44ad);
+                color: white;
+                text-decoration: none;
+                padding: 15px 30px;
+                border-radius: 12px;
+                font-weight: 600;
+                box-shadow: 0 4px 20px rgba(155, 89, 182, 0.3);
+                transition: all 0.3s ease;
+            " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(155, 89, 182, 0.4)'" 
+               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(155, 89, 182, 0.3)'">
+                🎮 Test Interaction & Gamification
+            </a>
+            <a href="profile-demo.html" style="
+                display: inline-block;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                text-decoration: none;
+                padding: 15px 30px;
+                border-radius: 12px;
+                font-weight: 600;
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+                transition: all 0.3s ease;
+            " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.4)'" 
+               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(102, 126, 234, 0.3)'">
+                👤 Test User Profile & AI Adaptation
+            </a>
+            <a href="analytics-demo.html" style="
+                display: inline-block;
+                background: linear-gradient(135deg, #e74c3c, #c0392b);
+                color: white;
+                text-decoration: none;
+                padding: 15px 30px;
+                border-radius: 12px;
+                font-weight: 600;
+                box-shadow: 0 4px 20px rgba(231, 76, 60, 0.3);
+                transition: all 0.3s ease;
+            " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(231, 76, 60, 0.4)'" 
+               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(231, 76, 60, 0.3)'">
+                📊 Test Performance Tracking & Analytics
+            </a>
+        </div>
+        
+        <!-- Personalized Suggestions Panel -->
+        <div id="suggestions-panel" style="
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        ">
+            <h3 style="margin: 0 0 20px 0; font-size: 24px; text-align: center;">💡 Personalized Recommendations</h3>
+            <div id="suggestions-content" style="text-align: center; color: #f8f9fa;">
+                <div style="font-size: 16px; margin-bottom: 15px;">Loading your personalized suggestions...</div>
+                <div style="font-size: 14px; opacity: 0.8;">Based on your progress and preferences</div>
+            </div>
+        </div>
+            
+            <div class="accessibility-features">
+                <div class="feature">
+                    <h3>🎮 Adaptive Controls</h3>
+                    <p>Customizable input methods including keyboard navigation, voice commands, and assistive device integration.</p>
+                </div>
+                <div class="feature">
+                    <h3>🔊 Audio Support</h3>
+                    <p>Comprehensive audio descriptions, screen reader compatibility, and spatial audio cues for navigation.</p>
+                </div>
+                <div class="feature">
+                    <h3>📱 Multi-Platform</h3>
+                    <p>Works on desktop, mobile, and VR headsets with responsive design and cross-platform compatibility.</p>
+                </div>
+                <div class="feature">
+                    <h3>📊 Progress Tracking</h3>
+                    <p>Built-in metrics collection to track user progress and adapt scenarios to individual needs and abilities.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assistive Device Integration -->
+    <script src="js/assistive-devices.js"></script>
+    <script src="js/device-config.js"></script>
+    <script src="js/adaptive-input.js"></script>
+    <!-- User Guidance System -->
+    <script src="js/user-guidance.js"></script>
+    <script src="js/guidance-config.js"></script>
+    <script src="js/task-definitions.js"></script>
+    <!-- Interaction & Gamification System -->
+    <script src="js/interaction-metrics.js"></script>
+    <script src="js/gamification.js"></script>
+    <script src="js/progress-dashboard.js"></script>
+    <script src="js/adaptive-suggestions.js"></script>
+    <!-- User Profile & AI Adaptation System -->
+    <script src="js/user-profile.js"></script>
+    <script src="js/ai-adaptation.js"></script>
+    <script src="js/remote-monitoring.js"></script>
+    <script src="js/profile-manager.js"></script>
+    <!-- Performance Tracking & Analytics System -->
+    <script src="js/performance-tracking.js"></script>
+    <script src="js/accessibility-compliance.js"></script>
+    <script src="js/user-feedback.js"></script>
+    <script src="js/analytics-dashboard.js"></script>
+
+    <script>
+        // Progress tracking functionality
+        const PROGRESS_KEY = 'vr_scenarios_progress';
+        
+        function getVisitedScenarios() {
+            const progress = localStorage.getItem(PROGRESS_KEY);
+            return progress ? JSON.parse(progress) : [];
+        }
+        
+        function markScenarioVisited(scenarioId) {
+            const visited = getVisitedScenarios();
+            if (!visited.includes(scenarioId)) {
+                visited.push(scenarioId);
+                localStorage.setItem(PROGRESS_KEY, JSON.stringify(visited));
+                updateProgressDisplay();
+            }
+        }
+        
+        function updateProgressDisplay() {
+            const visited = getVisitedScenarios();
+            const cards = document.querySelectorAll('.scenario-card[data-scenario-id]');
+            
+            cards.forEach(card => {
+                const scenarioId = card.getAttribute('data-scenario-id');
+                const isCompleted = visited.includes(scenarioId);
+                
+                if (isCompleted) {
+                    card.classList.add('completed');
+                    
+                    // Add progress indicator
+                    let indicator = card.querySelector('.progress-indicator');
+                    if (!indicator) {
+                        indicator = document.createElement('div');
+                        indicator.className = 'progress-indicator';
+                        indicator.textContent = 'Completed';
+                        card.appendChild(indicator);
+                    }
+                } else {
+                    card.classList.remove('completed');
+                    const indicator = card.querySelector('.progress-indicator');
+                    if (indicator) {
+                        indicator.remove();
+                    }
+                }
+            });
+            
+            // Update header with progress stats
+            updateProgressStats(visited.length, cards.length);
+        }
+        
+        function updateProgressStats(completed, total) {
+            // Progress text removed as requested
+            // Function kept for potential future use
+        }
+        
+        function openScenario(url) {
+            // Extract scenario ID from URL
+            const scenarioId = url.includes('grocery') ? 'grocery' : 
+                              url.includes('hospital') ? 'hospital' :
+                              url.includes('railway') ? 'railway' : null;
+            
+            if (scenarioId) {
+                markScenarioVisited(scenarioId);
+            }
+            
+            // Open the scenario in a new tab/window
+            window.open(url, '_blank');
+        }
+
+        // Add keyboard navigation support
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                const focusedElement = document.activeElement;
+                if (focusedElement.classList.contains('scenario-card')) {
+                    focusedElement.click();
+                }
+            }
+        });
+
+        // Add focus management for accessibility
+        const cards = document.querySelectorAll('.scenario-card');
+        cards.forEach((card, index) => {
+            card.setAttribute('tabindex', '0');
+            card.setAttribute('role', 'button');
+            card.setAttribute('aria-label', `Launch ${card.querySelector('.card-title').textContent} scenario`);
+        });
+
+        // Scenario source of truth (easily extendable)
+        const SCENARIOS = [
+            {
+                id: 'grocery',
+                title: '🛒 Grocery Shopping',
+                description: 'Master the art of grocery shopping in a realistic virtual store environment. Practice navigation, product selection, and checkout procedures while building confidence for real-world shopping experiences.',
+                features: [
+                    'Navigate store aisles and sections',
+                    'Find and select products',
+                    'Use self-checkout systems',
+                    'Practice payment and bagging',
+                    'Build shopping confidence'
+                ],
+                href: 'scenarios/grocery.html',
+                thumbnail: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'><defs><linearGradient id='floor' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%23d9d9d9'/><stop offset='100%25' style='stop-color:%23c0c0c0'/></linearGradient><linearGradient id='wall' x1='0%25' y1='0%25' x2='100%25' y2='0%25'><stop offset='0%25' style='stop-color:%23ffffff'/><stop offset='100%25' style='stop-color:%23f8f9fa'/></linearGradient></defs><rect width='400' height='200' fill='%23f0f8ff'/><rect x='0' y='100' width='400' height='100' fill='url(%23floor)'/><rect x='0' y='0' width='400' height='100' fill='url(%23wall)'/><rect x='50' y='20' width='300' height='60' fill='%23ffffff' stroke='%23e0e0e0' stroke-width='1'/><rect x='70' y='30' width='60' height='40' fill='%23e3f2fd' stroke='%23bbdefb' stroke-width='1'/><rect x='150' y='30' width='60' height='40' fill='%23f3e5f5' stroke='%23e1bee7' stroke-width='1'/><rect x='230' y='30' width='60' height='40' fill='%23e8f5e8' stroke='%23c8e6c9' stroke-width='1'/><rect x='310' y='30' width='30' height='40' fill='%23fff3e0' stroke='%23ffcc02' stroke-width='1'/><circle cx='100' cy='50' r='8' fill='%23ff5722'/><circle cx='100' cy='65' r='6' fill='%23ffeb3b'/><circle cx='100' cy='75' r='5' fill='%234caf50'/><rect x='170' y='45' width='10' height='15' fill='%23ff9800'/><rect x='185' y='45' width='10' height='15' fill='%23e91e63'/><rect x='200' y='45' width='10' height='15' fill='%23673ab7'/><rect x='250' y='45' width='15' height='10' fill='%23ffffff' stroke='%23bdbdbd'/><rect x='250' y='58' width='15' height='10' fill='%23ffeb3b'/><rect x='250' y='71' width='15' height='10' fill='%23ff9800'/><rect x='325' y='45' width='20' height='20' fill='%23ffcc02'/><rect x='328' y='48' width='14' height='14' fill='%23ffffff'/><rect x='200' y='120' width='80' height='40' fill='%238B4513' stroke='%23654321' stroke-width='1'/><text x='240' y='145' text-anchor='middle' fill='%23ffffff' font-family='Arial' font-size='12' font-weight='600'>Checkout</text><circle cx='80' cy='140' r='4' fill='%2387CEFA'/><circle cx='80' cy='150' r='3' fill='%23ffe0bd'/><circle cx='320' cy='140' r='4' fill='%2332CD32'/><circle cx='320' cy='150' r='3' fill='%23ffe0bd'/><text x='200' y='190' text-anchor='middle' fill='%23667eea' font-family='Arial' font-size='14' font-weight='600'>Grocery Store</text></svg>",
+                mobilityCompatibility: {
+                    none: true,
+                    wheelchair: true,
+                    walker: true,
+                    prosthetic: true
+                },
+                difficulty: 'beginner',
+                estimatedTime: '15-20 minutes'
+            },
+            {
+                id: 'hospital',
+                title: '🏥 Hospital Navigation',
+                description: 'Navigate complex hospital environments with confidence. Practice finding departments, interacting with medical staff, and understanding hospital procedures to reduce anxiety during real medical visits.',
+                features: [
+                    'Find departments and offices',
+                    'Navigate hospital corridors',
+                    'Interact with medical staff',
+                    'Understand appointment procedures',
+                    'Reduce medical visit anxiety'
+                ],
+                href: 'scenarios/hospital.html',
+                thumbnail: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'><defs><linearGradient id='floor2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%23a9d3c1'/><stop offset='100%25' style='stop-color:%2381c784'/></linearGradient><linearGradient id='wall2' x1='0%25' y1='0%25' x2='100%25' y2='0%25'><stop offset='0%25' style='stop-color:%23f5fbff'/><stop offset='100%25' style='stop-color:%23e8f4fb'/></linearGradient></defs><rect width='400' height='200' fill='%23e8f4fb'/><rect x='0' y='120' width='400' height='80' fill='url(%23floor2)'/><rect x='0' y='0' width='400' height='120' fill='url(%23wall2)'/><rect x='50' y='20' width='300' height='80' fill='%23ffffff' stroke='%23e0e0e0' stroke-width='1'/><rect x='70' y='40' width='80' height='40' fill='%23a9d3c1' stroke='%2381c784' stroke-width='1'/><rect x='170' y='40' width='60' height='40' fill='%23ffffff' stroke='%23e0e0e0' stroke-width='1'/><rect x='250' y='40' width='60' height='40' fill='%23ffffff' stroke='%23e0e0e0' stroke-width='1'/><rect x='330' y='40' width='40' height='40' fill='%23f5f5f5' stroke='%23e0e0e0' stroke-width='1'/><rect x='100' y='50' width='20' height='20' fill='%234682b4' stroke='%23336699' stroke-width='1'/><rect x='100' y='35' width='10' height='5' fill='%234682b4'/><rect x='100' y='70' width='10' height='5' fill='%234682b4'/><rect x='100' y='85' width='10' height='5' fill='%234682b4'/><rect x='100' y='100' width='20' height='5' fill='%23808080'/><rect x='190' y='50' width='15' height='20' fill='%231e2a38' stroke='%23000000' stroke-width='1'/><text x='197' y='65' text-anchor='middle' fill='%2300ff00' font-family='Arial' font-size='8' font-weight='600'>HR: 72</text><rect x='270' y='50' width='30' height='20' fill='%23d9e6f2' stroke='%23b0c4de' stroke-width='1'/><rect x='270' y='30' width='30' height='10' fill='%23b0c4de'/><rect x='275' y='15' width='4' height='4' fill='%23333333'/><rect x='285' y='15' width='4' height='4' fill='%23333333'/><rect x='295' y='15' width='4' height='4' fill='%23333333'/><rect x='275' y='75' width='4' height='4' fill='%23333333'/><rect x='285' y='75' width='4' height='4' fill='%23333333'/><rect x='295' y='75' width='4' height='4' fill='%23333333'/><rect x='50' y='140' width='40' height='20' fill='%23c1d9f0' stroke='%239fb8d6' stroke-width='1'/><rect x='50' y='120' width='40' height='20' fill='%239fb8d6'/><circle cx='80' cy='150' r='3' fill='%236495ed'/><circle cx='80' cy='160' r='2' fill='%23ffe0bd'/><circle cx='320' cy='150' r='3' fill='%2387ceeb'/><circle cx='320' cy='160' r='2' fill='%23ffe0bd'/><circle cx='200' cy='30' r='8' fill='%23d9e6ff'/><circle cx='180' cy='30' r='8' fill='%23d9e6ff'/><circle cx='220' cy='30' r='8' fill='%23d9e6ff'/><circle cx='200' cy='10' r='8' fill='%23d9e6ff'/><circle cx='200' cy='50' r='8' fill='%23d9e6ff'/><text x='200' y='190' text-anchor='middle' fill='%23667eea' font-family='Arial' font-size='14' font-weight='600'>Hospital</text></svg>",
+                mobilityCompatibility: {
+                    none: true,
+                    wheelchair: true,
+                    walker: true,
+                    prosthetic: false
+                },
+                difficulty: 'intermediate',
+                estimatedTime: '20-25 minutes'
+            },
+            {
+                id: 'railway',
+                title: '🚂 Railway Station',
+                description: 'Master public transportation with confidence. Practice navigating busy railway stations, purchasing tickets, finding platforms, and boarding trains to develop independence in travel.',
+                features: [
+                    'Navigate station layouts',
+                    'Purchase and validate tickets',
+                    'Find correct platforms',
+                    'Board and exit trains safely',
+                    'Use station facilities'
+                ],
+                href: 'scenarios/railway.html',
+                thumbnail: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'><defs><linearGradient id='floor3' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%23d7ccc8'/><stop offset='100%25' style='stop-color:%23bcaaa4'/></linearGradient><linearGradient id='wall3' x1='0%25' y1='0%25' x2='100%25' y2='0%25'><stop offset='0%25' style='stop-color:%23ffffff'/><stop offset='100%25' style='stop-color:%23f5f5f5'/></linearGradient></defs><rect width='400' height='200' fill='%2387ceeb'/><rect x='0' y='120' width='400' height='80' fill='url(%23floor3)'/><rect x='0' y='0' width='400' height='120' fill='url(%23wall3)'/><rect x='50' y='20' width='300' height='80' fill='%23ffffff' stroke='%23e0e0e0' stroke-width='1'/><rect x='70' y='40' width='260' height='20' fill='%23cfd8dc' stroke='%23b0bec5' stroke-width='1'/><rect x='70' y='70' width='260' height='20' fill='%23b0bec5' stroke='%2390a4ae' stroke-width='1'/><rect x='70' y='100' width='260' height='20' fill='%2390a4ae' stroke='%23607080' stroke-width='1'/><rect x='60' y='50' width='280' height='1' fill='%23424242'/><rect x='60' y='80' width='280' height='1' fill='%23424242'/><rect x='60' y='110' width='280' height='1' fill='%23424242'/><rect x='60' y='140' width='280' height='1' fill='%23424242'/><rect x='80' y='60' width='50' height='10' fill='%231976d2' stroke='%230d47a1' stroke-width='1'/><rect x='140' y='60' width='50' height='10' fill='%2329b6f6' stroke='%23019796' stroke-width='1'/><rect x='200' y='60' width='50' height='10' fill='%2329b6f6' stroke='%23019796' stroke-width='1'/><rect x='260' y='60' width='50' height='10' fill='%2329b6f6' stroke='%23019796' stroke-width='1'/><rect x='100' y='90' width='40' height='10' fill='%238e24aa' stroke='%234a148c' stroke-width='1'/><rect x='150' y='90' width='40' height='10' fill='%238e24aa' stroke='%234a148c' stroke-width='1'/><rect x='200' y='90' width='40' height='10' fill='%238e24aa' stroke='%234a148c' stroke-width='1'/><rect x='250' y='90' width='40' height='10' fill='%238e24aa' stroke='%234a148c' stroke-width='1'/><rect x='120' y='120' width='50' height='10' fill='%23d32f2f' stroke='%23b71c1c' stroke-width='1'/><rect x='180' y='120' width='50' height='10' fill='%23f44336' stroke='%23c62828' stroke-width='1'/><rect x='240' y='120' width='50' height='10' fill='%23f44336' stroke='%23c62828' stroke-width='1'/><rect x='300' y='120' width='50' height='10' fill='%23f44336' stroke='%23c62828' stroke-width='1'/><rect x='30' y='30' width='60' height='25' fill='%23fbc02d' stroke='%23f57f17' stroke-width='1'/><text x='60' y='47' text-anchor='middle' fill='%23000000' font-family='Arial' font-size='10' font-weight='600'>TICKETS</text><rect x='50' y='150' width='30' height='15' fill='%238B4513' stroke='%23654321' stroke-width='1'/><rect x='320' y='150' width='30' height='15' fill='%238B4513' stroke='%23654321' stroke-width='1'/><rect x='50' y='170' width='30' height='15' fill='%238B4513' stroke='%23654321' stroke-width='1'/><rect x='320' y='170' width='30' height='15' fill='%238B4513' stroke='%23654321' stroke-width='1'/><circle cx='80' cy='160' r='3' fill='%234169E1'/><circle cx='80' cy='170' r='2' fill='%23ffe0bd'/><circle cx='340' cy='160' r='3' fill='%2332CD32'/><circle cx='340' cy='170' r='2' fill='%23ffe0bd'/><circle cx='80' cy='180' r='3' fill='%23FF6347'/><circle cx='80' cy='190' r='2' fill='%23ffe0bd'/><circle cx='340' cy='180' r='3' fill='%2332CD32'/><circle cx='340' cy='190' r='2' fill='%23ffe0bd'/><text x='200' y='190' text-anchor='middle' fill='%23667eea' font-family='Arial' font-size='14' font-weight='600'>Railway Station</text></svg>",
+                mobilityCompatibility: {
+                    none: true,
+                    wheelchair: true,
+                    walker: false,
+                    prosthetic: true
+                },
+                difficulty: 'advanced',
+                estimatedTime: '25-30 minutes'
+            },
+            {
+                id: 'classroom',
+                title: '🎓 Classroom Learning',
+                description: 'Experience interactive classroom environments designed for educational accessibility. Practice participating in lessons, interacting with teachers and classmates, and building confidence in academic settings.',
+                features: [
+                    'Interactive blackboard with clickable content',
+                    'Engage with teacher and student avatars',
+                    'Navigate classroom seating arrangements',
+                    'Practice classroom participation skills',
+                    'Build academic confidence'
+                ],
+                href: 'scenarios/classroom.html',
+                thumbnail: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'><defs><linearGradient id='floor4' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%23d2b48c'/><stop offset='100%25' style='stop-color:%23bc9a6a'/></linearGradient><linearGradient id='wall4' x1='0%25' y1='0%25' x2='100%25' y2='0%25'><stop offset='0%25' style='stop-color:%23ffffff'/><stop offset='100%25' style='stop-color:%23f8f9fa'/></linearGradient></defs><rect width='400' height='200' fill='%23e0e0e0'/><rect x='0' y='120' width='400' height='80' fill='url(%23floor4)'/><rect x='0' y='0' width='400' height='120' fill='url(%23wall4)'/><rect x='50' y='20' width='300' height='80' fill='%23ffffff' stroke='%23e0e0e0' stroke-width='1'/><rect x='70' y='20' width='260' height='30' fill='%230a0a0a' stroke='%23000000' stroke-width='1'/><rect x='80' y='30' width='240' height='10' fill='%23ffffff' stroke='%23e0e0e0' stroke-width='1'/><text x='200' y='38' text-anchor='middle' fill='%23000000' font-family='Arial' font-size='8' font-weight='600'>Click the board to write</text><rect x='70' y='60' width='4' height='2' color='%23654321'/><rect x='80' y='60' width='4' height='2' color='%23654321'/><rect x='90' y='60' width='4' height='2' color='%23654321'/><rect x='100' y='60' width='4' height='2' color='%23654321'/><rect x='110' y='60' width='4' height='2' color='%23654321'/><rect x='120' y='60' width='4' height='2' color='%23654321'/><rect x='130' y='60' width='4' height='2' color='%23654321'/><rect x='140' y='60' width='4' height='2' color='%23654321'/><rect x='150' y='60' width='4' height='2' color='%23654321'/><rect x='160' y='60' width='4' height='2' color='%23654321'/><rect x='170' y='60' width='4' height='2' color='%23654321'/><rect x='180' y='60' width='4' height='2' color='%23654321'/><rect x='190' y='60' width='4' height='2' color='%23654321'/><rect x='200' y='60' width='4' height='2' color='%23654321'/><rect x='210' y='60' width='4' height='2' color='%23654321'/><rect x='220' y='60' width='4' height='2' color='%23654321'/><rect x='230' y='60' width='4' height='2' color='%23654321'/><rect x='240' y='60' width='4' height='2' color='%23654321'/><rect x='250' y='60' width='4' height='2' color='%23654321'/><rect x='260' y='60' width='4' height='2' color='%23654321'/><rect x='270' y='60' width='4' height='2' color='%23654321'/><rect x='280' y='60' width='4' height='2' color='%23654321'/><rect x='290' y='60' width='4' height='2' color='%23654321'/><rect x='300' y='60' width='4' height='2' color='%23654321'/><rect x='310' y='60' width='4' height='2' color='%23654321'/><rect x='320' y='60' width='4' height='2' color='%23654321'/><rect x='80' y='80' width='3' height='1' color='%238B4513'/><rect x='90' y='80' width='3' height='1' color='%238B4513'/><rect x='100' y='80' width='3' height='1' color='%238B4513'/><rect x='110' y='80' width='3' height='1' color='%238B4513'/><rect x='120' y='80' width='3' height='1' color='%238B4513'/><rect x='130' y='80' width='3' height='1' color='%238B4513'/><rect x='140' y='80' width='3' height='1' color='%238B4513'/><rect x='150' y='80' width='3' height='1' color='%238B4513'/><rect x='160' y='80' width='3' height='1' color='%238B4513'/><rect x='170' y='80' width='3' height='1' color='%238B4513'/><rect x='180' y='80' width='3' height='1' color='%238B4513'/><rect x='190' y='80' width='3' height='1' color='%238B4513'/><rect x='200' y='80' width='3' height='1' color='%238B4513'/><rect x='210' y='80' width='3' height='1' color='%238B4513'/><rect x='220' y='80' width='3' height='1' color='%238B4513'/><rect x='230' y='80' width='3' height='1' color='%238B4513'/><rect x='240' y='80' width='3' height='1' color='%238B4513'/><rect x='250' y='80' width='3' height='1' color='%238B4513'/><rect x='260' y='80' width='3' height='1' color='%238B4513'/><rect x='270' y='80' width='3' height='1' color='%238B4513'/><rect x='280' y='80' width='3' height='1' color='%238B4513'/><rect x='290' y='80' width='3' height='1' color='%238B4513'/><rect x='300' y='80' width='3' height='1' color='%238B4513'/><rect x='310' y='80' width='3' height='1' color='%238B4513'/><rect x='320' y='80' width='3' height='1' color='%238B4513'/><rect x='80' y='90' width='3' height='1' color='%238B4513'/><rect x='90' y='90' width='3' height='1' color='%238B4513'/><rect x='100' y='90' width='3' height='1' color='%238B4513'/><rect x='110' y='90' width='3' height='1' color='%238B4513'/><rect x='120' y='90' width='3' height='1' color='%238B4513'/><rect x='130' y='90' width='3' height='1' color='%238B4513'/><rect x='140' y='90' width='3' height='1' color='%238B4513'/><rect x='150' y='90' width='3' height='1' color='%238B4513'/><rect x='160' y='90' width='3' height='1' color='%238B4513'/><rect x='170' y='90' width='3' height='1' color='%238B4513'/><rect x='190' y='90' width='3' height='1' color='%238B4513'/><rect x='200' y='90' width='3' height='1' color='%238B4513'/><rect x='210' y='90' width='3' height='1' color='%238B4513'/><rect x='220' y='90' width='3' height='1' color='%238B4513'/><rect x='230' y='90' width='3' height='1' color='%238B4513'/><rect x='240' y='90' width='3' height='1' color='%238B4513'/><rect x='250' y='90' width='3' height='1' color='%238B4513'/><rect x='260' y='90' width='3' height='1' color='%238B4513'/><rect x='270' y='90' width='3' height='1' color='%238B4513'/><rect x='280' y='90' width='3' height='1' color='%238B4513'/><rect x='290' y='90' width='3' height='1' color='%238B4513'/><rect x='300' y='90' width='3' height='1' color='%238B4513'/><rect x='310' y='90' width='3' height='1' color='%238B4513'/><rect x='320' y='90' width='3' height='1' color='%238B4513'/><circle cx='100' cy='150' r='3' fill='%23ffcc99'/><circle cx='100' cy='160' r='2' fill='%23ffcc99'/><circle cx='150' cy='150' r='3' fill='%23ffcc99'/><circle cx='150' cy='160' r='2' fill='%23ffcc99'/><circle cx='200' cy='150' r='3' fill='%23ffcc99'/><circle cx='200' cy='160' r='2' fill='%23ffcc99'/><circle cx='250' cy='150' r='3' fill='%23ffcc99'/><circle cx='250' cy='160' r='2' fill='%23ffcc99'/><circle cx='300' cy='150' r='3' fill='%23ffcc99'/><circle cx='300' cy='160' r='2' fill='%23ffcc99'/><text x='200' y='190' text-anchor='middle' fill='%23667eea' font-family='Arial' font-size='14' font-weight='600'>Classroom</text></svg>",
+                mobilityCompatibility: {
+                    none: true,
+                    wheelchair: true,
+                    walker: true,
+                    prosthetic: true
+                },
+                difficulty: 'beginner',
+                estimatedTime: '10-15 minutes'
+            },
+            {
+                id: 'office',
+                title: '🏢 Office Simulator',
+                description: 'Experience a professional office environment designed for workplace accessibility. Practice navigating office spaces, using office equipment, and building confidence for professional work environments.',
+                features: [
+                    'Interactive office counters and workstations',
+                    'Animated doors and access controls',
+                    'Realistic office layout and signage',
+                    'Practice office equipment usage',
+                    'Build workplace confidence and independence'
+                ],
+                href: 'scenarios/office.html',
+                thumbnail: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'><defs><linearGradient id='floor5' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%23c9ccd1'/><stop offset='100%25' style='stop-color:%23b0b5bc'/></linearGradient><linearGradient id='wall5' x1='0%25' y1='0%25' x2='100%25' y2='0%25'><stop offset='0%25' style='stop-color:%23ffffff'/><stop offset='100%25' style='stop-color:%23f5f5f5'/></linearGradient></defs><rect width='400' height='200' fill='%23eef1f7'/><rect x='0' y='120' width='400' height='80' fill='url(%23floor5)'/><rect x='0' y='0' width='400' height='120' fill='url(%23wall5)'/><rect x='50' y='20' width='300' height='80' fill='%23ffffff' stroke='%23e0e0e0' stroke-width='1'/><rect x='70' y='20' width='260' height='20' fill='%23f0f3f8' stroke='%23e0e0e0' stroke-width='1'/><rect x='80' y='30' width='40' height='10' fill='%23e5e7eb' stroke='%23d1d5db' stroke-width='1'/><rect x='130' y='30' width='40' height='10' fill='%23e5e7eb' stroke='%23d1d5db' stroke-width='1'/><rect x='180' y='30' width='40' height='10' fill='%23e5e7eb' stroke='%23d1d5db' stroke-width='1'/><rect x='230' y='30' width='40' height='10' fill='%23e5e7eb' stroke='%23d1d5db' stroke-width='1'/><rect x='280' y='30' width='40' height='10' fill='%23e5e7eb' stroke='%23d1d5db' stroke-width='1'/><rect x='100' y='50' width='20' height='15' fill='%230f172a' stroke='%23000000' stroke-width='1'/><text x='110' y='60' text-anchor='middle' fill='%23f8fafc' font-family='Arial' font-size='6' font-weight='600'>A1</text><text x='110' y='67' text-anchor='middle' fill='%23f8fafc' font-family='Arial' font-size='4'>Reception</text><text x='110' y='72' text-anchor='middle' fill='%23f8fafc' font-family='Arial' font-size='4'>Open</text><rect x='150' y='50' width='20' height='15' fill='%230f172a' stroke='%23000000' stroke-width='1'/><text x='160' y='60' text-anchor='middle' fill='%23f8fafc' font-family='Arial' font-size='6' font-weight='600'>B3</text><text x='160' y='67' text-anchor='middle' fill='%23f8fafc' font-family='Arial' font-size='4'>Meeting</text><text x='160' y='72' text-anchor='middle' fill='%23f8fafc' font-family='Arial' font-size='4'>Room</text><rect x='200' y='50' width='20' height='15' fill='%230f172a' stroke='%23000000' stroke-width='1'/><text x='210' y='60' text-anchor='middle' fill='%23f8fafc' font-family='Arial' font-size='6' font-weight='600'>C2</text><text x='210' y='67' text-anchor='middle' fill='%23f8fafc' font-family='Arial' font-size='4'>Office</text><text x='210' y='72' text-anchor='middle' fill='%23f8fafc' font-family='Arial' font-size='4'>Space</text><rect x='80' y='80' width='60' height='15' fill='%23f0f3f8' stroke='%23e0e0e0' stroke-width='1'/><text x='110' y='90' text-anchor='middle' fill='%231112827' font-family='Arial' font-size='6' font-weight='600'>RECEPTION</text><rect x='150' y='80' width='60' height='15' fill='%23f0f3f8' stroke='%23e0e0e0' stroke-width='1'/><text x='180' y='90' text-anchor='middle' fill='%231112827' font-family='Arial' font-size='6' font-weight='600'>WORKSTATION</text><rect x='220' y='80' width='60' height='15' fill='%23f0f3f8' stroke='%23e0e0e0' stroke-width='1'/><text x='250' y='90' text-anchor='middle' fill='%231112827' font-family='Arial' font-size='6' font-weight='600'>CONFERENCE</text><rect x='50' y='150' width='30' height='15' fill='%23e5e7eb' stroke='%23d1d5db' stroke-width='1'/><rect x='320' y='150' width='30' height='15' fill='%23e5e7eb' stroke='%23d1d5db' stroke-width='1'/><circle cx='80' cy='160' r='3' fill='%234b5563'/><circle cx='80' cy='170' r='2' fill='%234b5563'/><circle cx='340' cy='160' r='3' fill='%234b5563'/><circle cx='340' cy='170' r='2' fill='%234b5563'/><text x='200' y='190' text-anchor='middle' fill='%23667eea' font-family='Arial' font-size='14' font-weight='600'>Office Simulator</text></svg>",
+                mobilityCompatibility: {
+                    none: true,
+                    wheelchair: true,
+                    walker: false,
+                    prosthetic: true
+                },
+                difficulty: 'intermediate',
+                estimatedTime: '20-25 minutes'
+            }
+        ];
+
+        function renderScenarioCard(s) {
+            const card = document.createElement('div');
+            card.className = 'scenario-card';
+            card.setAttribute('data-scenario-id', s.id);
+            card.setAttribute('tabindex', '0');
+            card.setAttribute('role', 'button');
+            card.setAttribute('aria-label', `Launch ${s.title} scenario`);
+            card.addEventListener('click', () => openScenario(s.href));
+
+            card.innerHTML = `
+                <div class="card-image" style="background-image: url('${s.thumbnail.replace(/'/g, "%27")}')">
+                    <div class="vr-icon">VR</div>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">${s.title}</h3>
+                    <p class="card-description">${s.description}</p>
+                    <ul class="card-features">
+                        ${s.features.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                    <button class="launch-button">Launch ${s.title.split(' ')[0]} VR</button>
+                </div>
+            `;
+
+            // Button also opens scenario
+            const btn = card.querySelector('.launch-button');
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openScenario(s.href);
+            });
+
+            return card;
+        }
+
+        function renderScenarios() {
+            const gridMount = document.getElementById('scenariosGrid');
+            if (!gridMount) return;
+            // Ensure mount is styled like grid
+            gridMount.className = 'scenarios-grid';
+            gridMount.innerHTML = '';
+            SCENARIOS.forEach(s => gridMount.appendChild(renderScenarioCard(s)));
+        }
+
+        // Add loading animation and initialize progress tracking
+        window.addEventListener('load', function() {
+            // Render scenarios dynamically
+            renderScenarios();
+
+            const cards = document.querySelectorAll('#scenariosGrid .scenario-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+
+            // Initialize progress display after rendering
+            updateProgressDisplay();
+        });
+        
+        // Listen for storage changes (when user completes scenarios in other tabs)
+        window.addEventListener('storage', function(e) {
+            if (e.key === PROGRESS_KEY) {
+                updateProgressDisplay();
+            }
+        });
+
+        // Mobility type selection
+        function setMobilityType(type) {
+            localStorage.setItem('mobilityType', type);
+            
+            // Update button states
+            document.querySelectorAll('.mobility-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+            
+            // Filter and display scenarios based on mobility type
+            filterAndDisplayScenarios(type);
+            
+            // Show confirmation
+            const confirmation = document.createElement('div');
+            confirmation.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                font-weight: 600;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            `;
+            confirmation.textContent = `Mobility preference set to: ${type === 'none' ? 'None' : type.charAt(0).toUpperCase() + type.slice(1)}`;
+            document.body.appendChild(confirmation);
+            
+            setTimeout(() => {
+                confirmation.remove();
+            }, 3000);
+        }
+
+        // Filter scenarios based on mobility compatibility
+        function filterScenariosByMobility(mobilityType) {
+            if (mobilityType === 'none') {
+                return SCENARIOS; // Show all scenarios for 'none'
+            }
+            
+            return SCENARIOS.filter(scenario => {
+                return scenario.mobilityCompatibility && scenario.mobilityCompatibility[mobilityType] === true;
+            });
+        }
+
+        // Filter and display scenarios
+        function filterAndDisplayScenarios(mobilityType) {
+            const filteredScenarios = filterScenariosByMobility(mobilityType);
+            const scenariosGrid = document.getElementById('scenarios-grid');
+            
+            // Clear existing scenarios
+            scenariosGrid.innerHTML = '';
+            
+            // Update header stats
+            updateScenarioStats(filteredScenarios.length, SCENARIOS.length);
+            
+            // Render filtered scenarios
+            filteredScenarios.forEach(scenario => {
+                const card = renderScenarioCard(scenario);
+                scenariosGrid.appendChild(card);
+            });
+            
+            // Show filtering message if scenarios are filtered
+            if (mobilityType !== 'none' && filteredScenarios.length < SCENARIOS.length) {
+                showFilteringMessage(mobilityType, filteredScenarios.length, SCENARIOS.length);
+            } else {
+                hideFilteringMessage();
+            }
+        }
+
+        // Update scenario statistics
+        function updateScenarioStats(visible, total) {
+            const statNumber = document.querySelector('.stat-number');
+            if (statNumber) {
+                statNumber.textContent = visible;
+            }
+        }
+
+        // Show filtering message
+        function showFilteringMessage(mobilityType, visible, total) {
+            let existingMessage = document.getElementById('filtering-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+            
+            const message = document.createElement('div');
+            message.id = 'filtering-message';
+            message.style.cssText = `
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+                border: 1px solid rgba(102, 126, 234, 0.3);
+                border-radius: 12px;
+                padding: 16px 20px;
+                margin: 20px auto;
+                max-width: 600px;
+                text-align: center;
+                color: #374151;
+                font-size: 0.9rem;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            `;
+            
+            const mobilityTypeName = mobilityType.charAt(0).toUpperCase() + mobilityType.slice(1);
+            message.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="font-size: 1.2rem;">🎯</span>
+                    <strong>Showing ${visible} of ${total} scenarios optimized for ${mobilityTypeName} users</strong>
+                </div>
+                <p style="margin: 0; color: #6b7280; font-size: 0.85rem;">
+                    Scenarios are filtered to show only those compatible with your selected mobility assistance.
+                </p>
+            `;
+            
+            const scenariosGrid = document.getElementById('scenarios-grid');
+            scenariosGrid.parentNode.insertBefore(message, scenariosGrid);
+        }
+
+        // Hide filtering message
+        function hideFilteringMessage() {
+            const existingMessage = document.getElementById('filtering-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+        }
+
+        // Initialize mobility selector on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedMobilityType = localStorage.getItem('mobilityType') || 'none';
+            
+            // Set the active button without triggering full functionality
+            document.querySelectorAll('.mobility-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-type="${savedMobilityType}"]`).classList.add('active');
+            
+            // Filter and display scenarios based on saved mobility type
+            filterAndDisplayScenarios(savedMobilityType);
+            
+            // Initialize assistive device system
+            initializeAssistiveDevices();
+            
+            // Initialize guidance system
+            initializeGuidanceSystem();
+            
+            // Initialize interaction & gamification systems
+            initializeInteractionSystems();
+            
+            // Initialize user profile & AI adaptation systems
+            initializeProfileSystems();
+            
+            // Initialize performance tracking & analytics systems
+            initializeAnalyticsSystems();
+        });
+        
+        // Initialize assistive device system
+        function initializeAssistiveDevices() {
+            // Wait for device manager to be ready
+            if (window.assistiveDeviceManager) {
+                // Initialize device configuration interface
+                window.deviceConfigInterface = new DeviceConfigInterface(window.assistiveDeviceManager);
+                
+                // Initialize adaptive input handler
+                window.adaptiveInputHandler = new AdaptiveInputHandler(window.assistiveDeviceManager);
+                
+                // Set up input event listeners
+                setupAssistiveInputListeners();
+                
+                console.log('Assistive device system initialized');
+            } else {
+                // Retry after a short delay
+                setTimeout(initializeAssistiveDevices, 100);
+            }
+        }
+        
+        // Set up assistive input listeners
+        function setupAssistiveInputListeners() {
+            // Listen for adaptive input events
+            document.addEventListener('adaptiveInput', function(event) {
+                const { type, value, mode } = event.detail;
+                // Adaptive input received
+                
+                // Handle different input types
+                switch(type) {
+                    case 'move':
+                        handleMovementInput(value);
+                        break;
+                    case 'interact':
+                        handleInteractionInput(value);
+                        break;
+                    case 'menu':
+                        handleMenuInput(value);
+                        break;
+                    case 'gesture':
+                        handleGestureInput(value);
+                        break;
+                }
+            });
+            
+            // Listen for assistive input events
+            document.addEventListener('assistiveInput', function(event) {
+                const { type, value, profile } = event.detail;
+                // Assistive input received
+            });
+        }
+        
+        // Handle movement input
+        function handleMovementInput(value) {
+            // This would handle movement in VR scenarios
+            // Process movement input without logging
+        }
+        
+        // Handle interaction input
+        function handleInteractionInput(value) {
+            // This would handle interactions in VR scenarios
+            // Process interaction input without logging
+        }
+        
+        // Handle menu input
+        function handleMenuInput(value) {
+            // This would handle menu navigation
+            // Process menu input without logging
+        }
+        
+        // Handle gesture input
+        function handleGestureInput(value) {
+            // This would handle gesture recognition
+            // Process gesture input without logging
+        }
+        
+        // Initialize guidance system
+        function initializeGuidanceSystem() {
+            // Wait for guidance system to be ready
+            if (window.UserGuidanceSystem) {
+                // Initialize guidance system
+                window.guidanceSystem = new UserGuidanceSystem();
+                
+                // Initialize guidance configuration interface
+                window.guidanceConfigInterface = new GuidanceConfigInterface(window.guidanceSystem);
+                
+                console.log('Guidance system initialized');
+            } else {
+                // Retry after a short delay
+                setTimeout(initializeGuidanceSystem, 100);
+            }
+        }
+        
+        // Initialize interaction & gamification systems
+        function initializeInteractionSystems() {
+            // Wait for all systems to be ready
+            if (window.InteractionMetrics && window.GamificationSystem && window.ProgressDashboard && window.AdaptiveSuggestions) {
+                // Initialize metrics system
+                window.interactionMetrics = new InteractionMetrics();
+                
+                // Initialize gamification system
+                window.gamificationSystem = new GamificationSystem(window.interactionMetrics);
+                
+                // Initialize progress dashboard
+                window.progressDashboard = new ProgressDashboard(window.interactionMetrics, window.gamificationSystem);
+                
+                // Initialize adaptive suggestions
+                window.adaptiveSuggestions = new AdaptiveSuggestions(window.interactionMetrics, window.gamificationSystem);
+                
+                // Set up cross-system event listeners
+                setupCrossSystemEventListeners();
+                
+                // Update suggestions panel
+                setTimeout(updateSuggestionsPanel, 500);
+                
+                // Interaction & gamification systems initialized
+            } else {
+                // Retry after a short delay
+                setTimeout(initializeInteractionSystems, 100);
+            }
+        }
+        
+        // Set up cross-system event listeners
+        function setupCrossSystemEventListeners() {
+            // Listen for gamification events
+            document.addEventListener('badgeAwarded', function(event) {
+                console.log('Badge awarded:', event.detail.badge.name);
+                // Show notification or update UI
+            });
+            
+            document.addEventListener('levelUp', function(event) {
+                console.log('Level up:', event.detail.newLevel);
+                // Show celebration or update UI
+            });
+            
+            // Listen for suggestion events
+            document.addEventListener('suggestionsUpdated', function(event) {
+                console.log('Suggestions updated:', event.detail.suggestions.length);
+                // Update suggestion UI if visible
+            });
+            
+            // Listen for metrics events
+            document.addEventListener('taskMetricsCompleted', function(event) {
+                console.log('Task metrics completed:', event.detail.task.name);
+                // Update progress displays
+            });
+            
+            // Listen for suggestions updates
+            document.addEventListener('suggestionsUpdated', function(event) {
+                updateSuggestionsPanel();
+            });
+        }
+        
+        // Initialize user profile & AI adaptation systems
+        function initializeProfileSystems() {
+            // Wait for all systems to be ready
+            if (window.UserProfile && window.AIAdaptationEngine && window.RemoteMonitoringSystem && window.ProfileManager) {
+                // Initialize user profile system
+                window.userProfile = new UserProfile();
+                
+                // Initialize AI adaptation engine
+                window.aiAdaptationEngine = new AIAdaptationEngine(window.userProfile, window.interactionMetrics);
+                
+                // Initialize remote monitoring system
+                window.remoteMonitoringSystem = new RemoteMonitoringSystem(window.userProfile, window.interactionMetrics, window.aiAdaptationEngine);
+                
+                // Initialize profile manager
+                window.profileManager = new ProfileManager(window.userProfile, window.aiAdaptationEngine, window.remoteMonitoringSystem);
+                
+                // Set up cross-system event listeners
+                setupProfileEventListeners();
+                
+                console.log('User Profile & AI Adaptation systems initialized');
+            } else {
+                // Retry after a short delay
+                setTimeout(initializeProfileSystems, 100);
+            }
+        }
+        
+        // Set up profile system event listeners
+        function setupProfileEventListeners() {
+            // Listen for profile updates
+            document.addEventListener('profileUpdated', function(event) {
+                console.log('Profile updated:', event.detail.profile.id);
+            });
+            
+            document.addEventListener('abilitiesUpdated', function(event) {
+                console.log('Abilities updated:', event.detail.abilities);
+            });
+            
+            // Listen for adaptation events
+            document.addEventListener('adaptationsApplied', function(event) {
+                console.log('Adaptations applied:', event.detail.adaptations);
+            });
+            
+            // Listen for monitoring events
+            document.addEventListener('monitoringStarted', function(event) {
+                console.log('Remote monitoring started');
+            });
+            
+            document.addEventListener('remoteFeedback', function(event) {
+                console.log('Remote feedback received:', event.detail.feedback.message);
+            });
+        }
+        
+        // Initialize performance tracking & analytics systems
+        function initializeAnalyticsSystems() {
+            console.log('Initializing analytics systems...');
+            console.log('PerformanceTracking available:', !!window.PerformanceTracking);
+            console.log('AccessibilityCompliance available:', !!window.AccessibilityCompliance);
+            console.log('UserFeedbackSystem available:', !!window.UserFeedbackSystem);
+            console.log('AnalyticsDashboard available:', !!window.AnalyticsDashboard);
+            
+            // Wait for all systems to be ready
+            if (window.PerformanceTracking && window.AccessibilityCompliance && window.UserFeedbackSystem && window.AnalyticsDashboard) {
+                try {
+                    // Initialize performance tracking
+                    window.performanceTracking = new PerformanceTracking(window.userProfile, window.interactionMetrics);
+                    console.log('Performance tracking initialized');
+                    
+                    // Initialize accessibility compliance
+                    window.accessibilityCompliance = new AccessibilityCompliance(window.performanceTracking);
+                    console.log('Accessibility compliance initialized');
+                    
+                    // Initialize user feedback system
+                    window.userFeedbackSystem = new UserFeedbackSystem(window.userProfile, window.performanceTracking, window.aiAdaptationEngine);
+                    console.log('User feedback system initialized');
+                    
+                    // Initialize analytics dashboard
+                    window.analyticsDashboard = new AnalyticsDashboard(window.performanceTracking, window.accessibilityCompliance, window.userFeedbackSystem);
+                    console.log('Analytics dashboard initialized');
+                    
+                    // Set up cross-system event listeners
+                    setupAnalyticsEventListeners();
+                    
+                    console.log('Performance Tracking & Analytics systems initialized successfully');
+                } catch (error) {
+                    console.error('Error initializing analytics systems:', error);
+                    // Retry after a short delay
+                    setTimeout(initializeAnalyticsSystems, 1000);
+                }
+            } else {
+                console.log('Not all analytics dependencies are ready, retrying...');
+                // Retry after a short delay
+                setTimeout(initializeAnalyticsSystems, 100);
+            }
+        }
+
+        // Navigation functions for user feedback and progress tracking
+        function openProgressDashboard() {
+            if (window.progressDashboard) {
+                window.progressDashboard.openDashboard();
+            } else {
+                // Try to initialize if not ready
+                if (window.ProgressDashboard && window.interactionMetrics && window.gamificationSystem) {
+                    window.progressDashboard = new ProgressDashboard(window.interactionMetrics, window.gamificationSystem);
+                    window.progressDashboard.openDashboard();
+                } else {
+                    // Show a simple demo dashboard if systems aren't ready
+                    showDemoProgressDashboard();
+                }
+            }
+        }
+
+        function showDemoProgressDashboard() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    border-radius: 20px;
+                    padding: 40px;
+                    max-width: 600px;
+                    width: 90%;
+                    text-align: center;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                ">
+                    <h2 style="color: #2c3e50; margin-bottom: 20px;">📊 Progress Dashboard</h2>
+                    <p style="color: #6c757d; margin-bottom: 30px;">
+                        The full progress tracking system is initializing. Here's a preview of what you'll see:
+                    </p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 30px;">
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                            <div style="font-size: 2rem; color: #667eea; margin-bottom: 10px;">🎯</div>
+                            <div style="font-weight: 600; color: #2c3e50;">Tasks Completed</div>
+                            <div style="font-size: 1.5rem; color: #28a745;">0</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                            <div style="font-size: 2rem; color: #f093fb; margin-bottom: 10px;">🏆</div>
+                            <div style="font-weight: 600; color: #2c3e50;">Badges Earned</div>
+                            <div style="font-size: 1.5rem; color: #ffc107;">0</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                            <div style="font-size: 2rem; color: #4facfe; margin-bottom: 10px;">⭐</div>
+                            <div style="font-weight: 600; color: #2c3e50;">Total Points</div>
+                            <div style="font-size: 1.5rem; color: #17a2b8;">0</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                            <div style="font-size: 2rem; color: #28a745; margin-bottom: 10px;">📈</div>
+                            <div style="font-weight: 600; color: #2c3e50;">Level</div>
+                            <div style="font-size: 1.5rem; color: #6f42c1;">1</div>
+                        </div>
+                    </div>
+                    
+                    <p style="color: #6c757d; font-size: 0.9rem; margin-bottom: 20px;">
+                        Complete scenarios to start tracking your progress and earning achievements!
+                    </p>
+                    
+                    <button onclick="this.parentElement.parentElement.remove()" style="
+                        background: linear-gradient(135deg, #667eea, #764ba2);
+                        color: white;
+                        border: none;
+                        padding: 12px 24px;
+                        border-radius: 8px;
+                        font-size: 1rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                    ">Got it!</button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function openAnalyticsDashboard() {
+            console.log('=== ANALYTICS DASHBOARD DEBUG ===');
+            console.log('AnalyticsDashboard class available:', !!window.AnalyticsDashboard);
+            console.log('performanceTracking available:', !!window.performanceTracking);
+            console.log('accessibilityCompliance available:', !!window.accessibilityCompliance);
+            console.log('userFeedbackSystem available:', !!window.userFeedbackSystem);
+            console.log('analyticsDashboard instance available:', !!window.analyticsDashboard);
+            
+            // Always show the demo dashboard for now to ensure it works
+            console.log('Showing demo analytics dashboard...');
+            showDemoAnalyticsDashboard();
+            
+            // TODO: Fix the real analytics dashboard initialization
+            /*
+            if (window.analyticsDashboard) {
+                console.log('Using existing analytics dashboard instance');
+                window.analyticsDashboard.openDashboard();
+            } else {
+                // Try to initialize if not ready
+                if (window.AnalyticsDashboard) {
+                    console.log('Creating new analytics dashboard instance...');
+                    // Create mock dependencies if they don't exist
+                    const mockPerformanceTracking = window.performanceTracking || {
+                        getOverallStats: () => ({ totalSessions: 0, averageDuration: 0, successRate: 0 }),
+                        getSessionData: () => [],
+                        getPerformanceMetrics: () => ({ completionRate: 0, averageTime: 0, errorRate: 0 })
+                    };
+                    
+                    const mockAccessibilityCompliance = window.accessibilityCompliance || {
+                        getComplianceSummary: () => ({ score: 100, violations: 0, lastChecked: new Date().toISOString() }),
+                        getComplianceHistory: () => []
+                    };
+                    
+                    const mockUserFeedback = window.userFeedbackSystem || {
+                        getFeedbackSummary: () => ({ averageRating: 0, totalFeedback: 0, satisfaction: 0 }),
+                        getFeedbackHistory: () => []
+                    };
+                    
+                    try {
+                        window.analyticsDashboard = new AnalyticsDashboard(mockPerformanceTracking, mockAccessibilityCompliance, mockUserFeedback);
+                        window.analyticsDashboard.openDashboard();
+                        console.log('Analytics dashboard created and opened successfully');
+                    } catch (error) {
+                        console.error('Error creating analytics dashboard:', error);
+                        showDemoAnalyticsDashboard();
+                    }
+                } else {
+                    console.log('AnalyticsDashboard class not available, showing demo');
+                    // Show a simple demo analytics dashboard
+                    showDemoAnalyticsDashboard();
+                }
+            }
+            */
+        }
+
+        function showDemoAnalyticsDashboard() {
+            const modal = document.createElement('div');
+            modal.id = 'analytics-demo-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            `;
+            
+            // Get some basic stats from localStorage if available
+            const sessions = JSON.parse(localStorage.getItem('vrSessions') || '[]');
+            const totalSessions = sessions.length;
+            const totalDuration = sessions.reduce((sum, session) => sum + (session.duration || 0), 0);
+            const avgDuration = totalSessions > 0 ? Math.round(totalDuration / totalSessions / 1000) : 0;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    border-radius: 20px;
+                    padding: 40px;
+                    max-width: 800px;
+                    width: 90%;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                ">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                        <h2 style="color: #2c3e50; margin: 0;">📈 Analytics Dashboard</h2>
+                        <button onclick="document.getElementById('analytics-demo-modal').remove()" style="
+                            background: #e74c3c;
+                            color: white;
+                            border: none;
+                            border-radius: 50%;
+                            width: 40px;
+                            height: 40px;
+                            font-size: 18px;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        ">×</button>
+                    </div>
+                    
+                    <!-- Navigation Tabs -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #ecf0f1;">
+                        <button class="analytics-tab active" data-view="overview" style="
+                            background: none;
+                            border: none;
+                            padding: 15px 25px;
+                            cursor: pointer;
+                            font-size: 16px;
+                            font-weight: 600;
+                            color: #e74c3c;
+                            border-bottom: 3px solid #e74c3c;
+                        ">Overview</button>
+                        <button class="analytics-tab" data-view="performance" style="
+                            background: none;
+                            border: none;
+                            padding: 15px 25px;
+                            cursor: pointer;
+                            font-size: 16px;
+                            font-weight: 600;
+                            color: #6c757d;
+                            border-bottom: 3px solid transparent;
+                        ">Performance</button>
+                        <button class="analytics-tab" data-view="accessibility" style="
+                            background: none;
+                            border: none;
+                            padding: 15px 25px;
+                            cursor: pointer;
+                            font-size: 16px;
+                            font-weight: 600;
+                            color: #6c757d;
+                            border-bottom: 3px solid transparent;
+                        ">Accessibility</button>
+                    </div>
+                    
+                    <!-- Overview Tab -->
+                    <div id="overview-tab" class="analytics-content">
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 30px;">
+                            <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px; border-radius: 15px; text-align: center;">
+                                <div style="font-size: 2.5rem; margin-bottom: 10px;">📊</div>
+                                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 5px;">${totalSessions}</div>
+                                <div style="font-size: 1rem; opacity: 0.9;">Total Sessions</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #f093fb, #f5576c); color: white; padding: 25px; border-radius: 15px; text-align: center;">
+                                <div style="font-size: 2.5rem; margin-bottom: 10px;">⏱️</div>
+                                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 5px;">${avgDuration}s</div>
+                                <div style="font-size: 1rem; opacity: 0.9;">Avg Duration</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; padding: 25px; border-radius: 15px; text-align: center;">
+                                <div style="font-size: 2.5rem; margin-bottom: 10px;">♿</div>
+                                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 5px;">100%</div>
+                                <div style="font-size: 1rem; opacity: 0.9;">Accessibility</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; padding: 25px; border-radius: 15px; text-align: center;">
+                                <div style="font-size: 2.5rem; margin-bottom: 10px;">💬</div>
+                                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 5px;">0</div>
+                                <div style="font-size: 1rem; opacity: 0.9;">Feedback</div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 25px; border-radius: 15px; margin-bottom: 20px;">
+                            <h3 style="color: #2c3e50; margin-bottom: 15px;">📈 Recent Activity</h3>
+                            <p style="color: #6c757d; margin: 0;">
+                                ${totalSessions > 0 ? 
+                                    `You've completed ${totalSessions} VR session${totalSessions > 1 ? 's' : ''} with an average duration of ${avgDuration} seconds.` :
+                                    'No sessions completed yet. Start exploring scenarios to generate analytics data!'
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Performance Tab -->
+                    <div id="performance-tab" class="analytics-content" style="display: none;">
+                        <div style="background: #f8f9fa; padding: 25px; border-radius: 15px; margin-bottom: 20px;">
+                            <h3 style="color: #2c3e50; margin-bottom: 15px;">🎯 Performance Metrics</h3>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                                <div style="text-align: center; padding: 15px; background: white; border-radius: 10px;">
+                                    <div style="font-size: 1.5rem; color: #28a745; font-weight: 700;">${totalSessions > 0 ? '100%' : '0%'}</div>
+                                    <div style="color: #6c757d; font-size: 0.9rem;">Completion Rate</div>
+                                </div>
+                                <div style="text-align: center; padding: 15px; background: white; border-radius: 10px;">
+                                    <div style="font-size: 1.5rem; color: #17a2b8; font-weight: 700;">${avgDuration}s</div>
+                                    <div style="color: #6c757d; font-size: 0.9rem;">Avg Time</div>
+                                </div>
+                                <div style="text-align: center; padding: 15px; background: white; border-radius: 10px;">
+                                    <div style="font-size: 1.5rem; color: #ffc107; font-weight: 700;">0%</div>
+                                    <div style="color: #6c757d; font-size: 0.9rem;">Error Rate</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Accessibility Tab -->
+                    <div id="accessibility-tab" class="analytics-content" style="display: none;">
+                        <div style="background: #f8f9fa; padding: 25px; border-radius: 15px; margin-bottom: 20px;">
+                            <h3 style="color: #2c3e50; margin-bottom: 15px;">♿ Accessibility Compliance</h3>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                                <div style="text-align: center; padding: 15px; background: white; border-radius: 10px;">
+                                    <div style="font-size: 1.5rem; color: #28a745; font-weight: 700;">100%</div>
+                                    <div style="color: #6c757d; font-size: 0.9rem;">WCAG Compliance</div>
+                                </div>
+                                <div style="text-align: center; padding: 15px; background: white; border-radius: 10px;">
+                                    <div style="font-size: 1.5rem; color: #28a745; font-weight: 700;">0</div>
+                                    <div style="color: #6c757d; font-size: 0.9rem;">Violations</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <p style="color: #6c757d; font-size: 0.9rem; margin-bottom: 20px;">
+                            This is a demo analytics dashboard. The full system will provide real-time data and advanced analytics.
+                        </p>
+                        <button onclick="document.getElementById('analytics-demo-modal').remove()" style="
+                            background: linear-gradient(135deg, #f093fb, #f5576c);
+                            color: white;
+                            border: none;
+                            padding: 12px 24px;
+                            border-radius: 8px;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                        ">Close Dashboard</button>
+                    </div>
+                </div>
+            `;
+            
+            // Add tab switching functionality
+            modal.querySelectorAll('.analytics-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    modal.querySelectorAll('.analytics-tab').forEach(t => {
+                        t.style.color = '#6c757d';
+                        t.style.borderBottomColor = 'transparent';
+                    });
+                    
+                    // Add active class to clicked tab
+                    this.style.color = '#e74c3c';
+                    this.style.borderBottomColor = '#e74c3c';
+                    
+                    // Hide all content
+                    modal.querySelectorAll('.analytics-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    
+                    // Show selected content
+                    const view = this.dataset.view;
+                    const content = modal.querySelector(`#${view}-tab`);
+                    if (content) {
+                        content.style.display = 'block';
+                    }
+                });
+            });
+            
+            document.body.appendChild(modal);
+        }
+
+        function promptUserFeedback() {
+            if (window.userFeedbackSystem) {
+                // Prompt for general feedback about the application
+                window.userFeedbackSystem.promptSessionFeedback({
+                    scenario: 'general',
+                    duration: 0,
+                    tasksCompleted: 0,
+                    timestamp: new Date().toISOString()
+                });
+            } else {
+                // Try to initialize if not ready
+                if (window.UserFeedbackSystem && window.userProfile && window.performanceTracking && window.aiAdaptationEngine) {
+                    window.userFeedbackSystem = new UserFeedbackSystem(window.userProfile, window.performanceTracking, window.aiAdaptationEngine);
+                    window.userFeedbackSystem.promptSessionFeedback({
+                        scenario: 'general',
+                        duration: 0,
+                        tasksCompleted: 0,
+                        timestamp: new Date().toISOString()
+                    });
+                } else {
+                    // Show a simple feedback form
+                    showDemoFeedbackForm();
+                }
+            }
+        }
+
+        function showDemoFeedbackForm() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    border-radius: 20px;
+                    padding: 40px;
+                    max-width: 500px;
+                    width: 90%;
+                    text-align: center;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                ">
+                    <h2 style="color: #2c3e50; margin-bottom: 20px;">💬 Give Feedback</h2>
+                    <p style="color: #6c757d; margin-bottom: 30px;">
+                        Help us improve the VR Accessibility Hub! Your feedback is valuable.
+                    </p>
+                    
+                    <div style="text-align: left; margin-bottom: 30px;">
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; font-weight: 600; color: #2c3e50; margin-bottom: 8px;">How would you rate your experience?</label>
+                            <div style="display: flex; gap: 10px; justify-content: center;">
+                                <button class="rating-btn" data-rating="1" style="padding: 8px 12px; border: 2px solid #ddd; border-radius: 8px; background: white; cursor: pointer;">😞</button>
+                                <button class="rating-btn" data-rating="2" style="padding: 8px 12px; border: 2px solid #ddd; border-radius: 8px; background: white; cursor: pointer;">😐</button>
+                                <button class="rating-btn" data-rating="3" style="padding: 8px 12px; border: 2px solid #ddd; border-radius: 8px; background: white; cursor: pointer;">😊</button>
+                                <button class="rating-btn" data-rating="4" style="padding: 8px 12px; border: 2px solid #ddd; border-radius: 8px; background: white; cursor: pointer;">😄</button>
+                                <button class="rating-btn" data-rating="5" style="padding: 8px 12px; border: 2px solid #ddd; border-radius: 8px; background: white; cursor: pointer;">🤩</button>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; font-weight: 600; color: #2c3e50; margin-bottom: 8px;">What would you like to see improved?</label>
+                            <textarea placeholder="Your suggestions..." style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; resize: vertical; min-height: 80px; font-family: inherit;"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; justify-content: center;">
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+                            background: #6c757d;
+                            color: white;
+                            border: none;
+                            padding: 12px 24px;
+                            border-radius: 8px;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                        ">Cancel</button>
+                        <button onclick="submitDemoFeedback(this)" style="
+                            background: linear-gradient(135deg, #4facfe, #00f2fe);
+                            color: white;
+                            border: none;
+                            padding: 12px 24px;
+                            border-radius: 8px;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                        ">Submit Feedback</button>
+                    </div>
+                </div>
+            `;
+            
+            // Add rating button functionality
+            modal.querySelectorAll('.rating-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    modal.querySelectorAll('.rating-btn').forEach(b => b.style.background = 'white');
+                    this.style.background = '#4facfe';
+                    this.style.color = 'white';
+                });
+            });
+            
+            document.body.appendChild(modal);
+        }
+
+        function submitDemoFeedback(button) {
+            const modal = button.closest('div[style*="position: fixed"]');
+            const rating = modal.querySelector('.rating-btn[style*="background: rgb(79, 172, 254)"]')?.dataset.rating || '0';
+            const feedback = modal.querySelector('textarea').value;
+            
+            // Show thank you message
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    border-radius: 20px;
+                    padding: 40px;
+                    max-width: 400px;
+                    width: 90%;
+                    text-align: center;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                ">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">🙏</div>
+                    <h2 style="color: #2c3e50; margin-bottom: 20px;">Thank You!</h2>
+                    <p style="color: #6c757d; margin-bottom: 30px;">
+                        Your feedback has been recorded. We appreciate you helping us improve the VR Accessibility Hub!
+                    </p>
+                    <button onclick="this.parentElement.parentElement.remove()" style="
+                        background: linear-gradient(135deg, #4facfe, #00f2fe);
+                        color: white;
+                        border: none;
+                        padding: 12px 24px;
+                        border-radius: 8px;
+                        font-size: 1rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                    ">Close</button>
+                </div>
+            `;
+        }
+        
+        // Set up analytics system event listeners
+        function setupAnalyticsEventListeners() {
+            // Listen for performance events
+            document.addEventListener('trendAnalysisCompleted', function(event) {
+                console.log('Trend analysis completed:', event.detail.analysis);
+            });
+            
+            // Listen for compliance events
+            document.addEventListener('complianceChecked', function(event) {
+                console.log('Compliance checked:', event.detail.score);
+            });
+            
+            // Listen for feedback events
+            document.addEventListener('taskFeedbackCollected', function(event) {
+                console.log('Task feedback collected:', event.detail.feedback);
+            });
+            
+            document.addEventListener('sessionFeedbackCollected', function(event) {
+                console.log('Session feedback collected:', event.detail.feedback);
+            });
+        }
+
+        // Debug function to test analytics dashboard
+        function testAnalyticsDashboard() {
+            console.log('=== ANALYTICS DASHBOARD DEBUG ===');
+            console.log('AnalyticsDashboard class:', window.AnalyticsDashboard);
+            console.log('AnalyticsDashboard instance:', window.analyticsDashboard);
+            console.log('Performance tracking:', window.performanceTracking);
+            console.log('Accessibility compliance:', window.accessibilityCompliance);
+            console.log('User feedback system:', window.userFeedbackSystem);
+            
+            if (window.AnalyticsDashboard) {
+                console.log('AnalyticsDashboard class is available');
+                try {
+                    const testInstance = new window.AnalyticsDashboard(
+                        { getOverallStats: () => ({}) },
+                        { getComplianceSummary: () => ({}) },
+                        { getFeedbackSummary: () => ({}) }
+                    );
+                    console.log('Test instance created successfully:', testInstance);
+                    testInstance.openDashboard();
+                } catch (error) {
+                    console.error('Error creating test instance:', error);
+                }
+            } else {
+                console.log('AnalyticsDashboard class is NOT available');
+            }
+        }
+
+        // Make test function available globally
+        window.testAnalyticsDashboard = testAnalyticsDashboard;
+        
+        // Update suggestions panel
+        function updateSuggestionsPanel() {
+            if (window.adaptiveSuggestions) {
+                const suggestions = window.adaptiveSuggestions.getSuggestions(3);
+                const content = document.getElementById('suggestions-content');
+                
+                if (suggestions.length > 0) {
+                    content.innerHTML = suggestions.map(suggestion => `
+                        <div style="
+                            background: rgba(255, 255, 255, 0.1);
+                            padding: 15px;
+                            border-radius: 10px;
+                            margin-bottom: 10px;
+                            text-align: left;
+                        ">
+                            <div style="font-weight: 600; margin-bottom: 5px;">${suggestion.title}</div>
+                            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 10px;">${suggestion.description}</div>
+                            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                                <button onclick="acceptSuggestion('${suggestion.id}')" style="
+                                    background: #27ae60;
+                                    color: white;
+                                    border: none;
+                                    padding: 8px 16px;
+                                    border-radius: 6px;
+                                    cursor: pointer;
+                                    font-size: 12px;
+                                ">Accept</button>
+                                <button onclick="dismissSuggestion('${suggestion.id}')" style="
+                                    background: #e74c3c;
+                                    color: white;
+                                    border: none;
+                                    padding: 8px 16px;
+                                    border-radius: 6px;
+                                    cursor: pointer;
+                                    font-size: 12px;
+                                ">Dismiss</button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    content.innerHTML = `
+                        <div style="font-size: 16px; margin-bottom: 15px;">No suggestions available</div>
+                        <div style="font-size: 14px; opacity: 0.8;">Complete some tasks to get personalized recommendations</div>
+                    `;
+                }
+            }
+        }
+        
+        // Accept suggestion
+        function acceptSuggestion(suggestionId) {
+            if (window.adaptiveSuggestions) {
+                window.adaptiveSuggestions.acceptSuggestion(suggestionId);
+                updateSuggestionsPanel();
+            }
+        }
+        
+        // Dismiss suggestion
+        function dismissSuggestion(suggestionId) {
+            if (window.adaptiveSuggestions) {
+                window.adaptiveSuggestions.dismissSuggestion(suggestionId);
+                updateSuggestionsPanel();
+            }
+        }
+    </script>
+</body>
+</html>

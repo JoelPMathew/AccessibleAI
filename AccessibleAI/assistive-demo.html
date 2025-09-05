@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistive Device Integration Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .demo-section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .demo-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .demo-section p {
+            color: #6c757d;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .input-test-area {
+            min-height: 200px;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            background: white;
+            margin-bottom: 20px;
+        }
+
+        .input-test-area:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-log {
+            max-height: 150px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .input-log .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .input-log .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-entry .timestamp {
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .log-entry .type {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .log-entry .value {
+            color: #2c3e50;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .control-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .control-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .control-button:active {
+            transform: translateY(0);
+        }
+
+        .control-button:disabled {
+            background: #e9ecef;
+            color: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-indicators {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-indicator {
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator.active {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .status-indicator.inactive {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .status-indicator .icon {
+            font-size: 20px;
+        }
+
+        .status-indicator .text {
+            flex: 1;
+        }
+
+        .status-indicator .status {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .status-indicator.active .status {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-indicator.inactive .status {
+            background: #dc3545;
+            color: white;
+        }
+
+        .voice-control {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .voice-control h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+
+        .voice-commands {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .voice-command {
+            background: white;
+            border: 1px solid #bbdefb;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            color: #1976d2;
+        }
+
+        .gesture-area {
+            background: #f3e5f5;
+            border: 2px dashed #ce93d8;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .gesture-area.active {
+            border-color: #9c27b0;
+            background: #fce4ec;
+        }
+
+        .gesture-area .gesture-text {
+            color: #7b1fa2;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .gesture-area .gesture-hint {
+            color: #ab47bc;
+            font-size: 14px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .demo-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='index.html'">
+        🏠 Back to Library
+    </button>
+
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Assistive Device Integration Demo</h1>
+            <p>Test and experience different assistive input methods</p>
+        </div>
+
+        <div class="content">
+            <!-- Device Status -->
+            <div class="demo-section">
+                <h2>📱 Device Status</h2>
+                <p>Current status of connected assistive devices and capabilities.</p>
+                <div class="status-indicators" id="status-indicators">
+                    <!-- Status indicators will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Input Testing -->
+            <div class="demo-section">
+                <h2>⌨️ Input Testing</h2>
+                <p>Try different input methods to test your assistive device configuration. The input test area will log all detected inputs.</p>
+                <div class="input-test-area" id="input-test-area" tabindex="0">
+                    <div class="input-log" id="input-log">
+                        <div class="log-entry">
+                            <span class="timestamp">Ready to test inputs...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="control-button" onclick="testInput('move', 'forward')">
+                        🚶 Move Forward
+                    </button>
+                    <button class="control-button" onclick="testInput('interact', 'click')">
+                        👆 Interact
+                    </button>
+                    <button class="control-button" onclick="testInput('menu', 'open')">
+                        📋 Open Menu
+                    </button>
+                    <button class="control-button" onclick="clearInputLog()">
+                        🗑️ Clear Log
+                    </button>
+                </div>
+            </div>
+
+            <!-- Voice Control -->
+            <div class="demo-section">
+                <h2>🎤 Voice Control</h2>
+                <p>Test voice recognition capabilities. Click the button below to start voice recognition, then try speaking the commands listed.</p>
+                <div class="voice-control">
+                    <h3>Voice Commands</h3>
+                    <div class="voice-commands">
+                        <div class="voice-command">"move forward"</div>
+                        <div class="voice-command">"move back"</div>
+                        <div class="voice-command">"move left"</div>
+                        <div class="voice-command">"move right"</div>
+                        <div class="voice-command">"interact"</div>
+                        <div class="voice-command">"select"</div>
+                        <div class="voice-command">"menu"</div>
+                        <div class="voice-command">"help"</div>
+                    </div>
+                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        <button class="control-button" id="start-voice" onclick="startVoiceRecognition()">
+                            🎤 Start Voice
+                        </button>
+                        <button class="control-button" id="stop-voice" onclick="stopVoiceRecognition()">
+                            ⏹️ Stop Voice
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gesture Recognition -->
+            <div class="demo-section">
+                <h2>👋 Gesture Recognition</h2>
+                <p>Test motion capture and gesture recognition. Move your device or use touch gestures in the area below.</p>
+                <div class="gesture-area" id="gesture-area">
+                    <div class="gesture-text">Gesture Recognition Area</div>
+                    <div class="gesture-hint">Move your device or use touch gestures</div>
+                </div>
+                <div class="controls">
+                    <button class="control-button" onclick="testGesture('swipe_up')">
+                        ⬆️ Swipe Up
+                    </button>
+                    <button class="control-button" onclick="testGesture('swipe_down')">
+                        ⬇️ Swipe Down
+                    </button>
+                    <button class="control-button" onclick="testGesture('swipe_left')">
+                        ⬅️ Swipe Left
+                    </button>
+                    <button class="control-button" onclick="testGesture('swipe_right')">
+                        ➡️ Swipe Right
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="demo-section">
+                <h2>📊 Input Statistics</h2>
+                <p>Real-time statistics of input events and device usage.</p>
+                <div class="stats" id="stats">
+                    <div class="stat-card">
+                        <div class="number" id="total-inputs">0</div>
+                        <div class="label">Total Inputs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="voice-inputs">0</div>
+                        <div class="label">Voice Inputs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="gesture-inputs">0</div>
+                        <div class="label">Gestures</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="keyboard-inputs">0</div>
+                        <div class="label">Keyboard</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assistive Device Integration -->
+    <script src="js/assistive-devices.js"></script>
+    <script src="js/device-config.js"></script>
+    <script src="js/adaptive-input.js"></script>
+
+    <script>
+        // Demo-specific variables
+        let inputCount = 0;
+        let voiceInputCount = 0;
+        let gestureInputCount = 0;
+        let keyboardInputCount = 0;
+        let isVoiceActive = false;
+
+        // Initialize demo
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDemo();
+        });
+
+        function initializeDemo() {
+            // Wait for assistive device manager to be ready
+            if (window.assistiveDeviceManager) {
+                setupDemo();
+            } else {
+                setTimeout(initializeDemo, 100);
+            }
+        }
+
+        function setupDemo() {
+            // Initialize device configuration interface
+            window.deviceConfigInterface = new DeviceConfigInterface(window.assistiveDeviceManager);
+            
+            // Initialize adaptive input handler
+            window.adaptiveInputHandler = new AdaptiveInputHandler(window.assistiveDeviceManager);
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Update device status
+            updateDeviceStatus();
+            
+            // Start statistics update
+            setInterval(updateStatistics, 1000);
+            
+            console.log('Assistive device demo initialized');
+        }
+
+        function setupEventListeners() {
+            // Listen for adaptive input events
+            document.addEventListener('adaptiveInput', function(event) {
+                const { type, value } = event.detail;
+                logInput(type, value, 'adaptive');
+            });
+
+            // Listen for assistive input events
+            document.addEventListener('assistiveInput', function(event) {
+                const { type, value } = event.detail;
+                logInput(type, value, 'assistive');
+            });
+
+            // Listen for keyboard events
+            document.addEventListener('keydown', function(event) {
+                logInput('keyboard', event.key, 'keyboard');
+            });
+
+            // Listen for touch events
+            document.addEventListener('touchstart', function(event) {
+                logInput('touch', 'touch', 'touch');
+            });
+
+            // Listen for device motion events
+            window.addEventListener('devicemotion', function(event) {
+                const { acceleration } = event;
+                const magnitude = Math.sqrt(acceleration.x**2 + acceleration.y**2 + acceleration.z**2);
+                
+                if (magnitude > 15) {
+                    let gesture = null;
+                    if (acceleration.y > 10) gesture = 'swipe_up';
+                    else if (acceleration.y < -10) gesture = 'swipe_down';
+                    else if (acceleration.x > 10) gesture = 'swipe_right';
+                    else if (acceleration.x < -10) gesture = 'swipe_left';
+                    
+                    if (gesture) {
+                        logInput('gesture', gesture, 'motion');
+                        highlightGestureArea();
+                    }
+                }
+            });
+        }
+
+        function updateDeviceStatus() {
+            const capabilities = window.assistiveDeviceManager.getDeviceCapabilities();
+            const activeDevices = window.assistiveDeviceManager.getActiveDevices();
+            
+            const statusContainer = document.getElementById('status-indicators');
+            statusContainer.innerHTML = '';
+
+            Object.entries(capabilities).forEach(([capability, enabled]) => {
+                const statusIndicator = document.createElement('div');
+                statusIndicator.className = `status-indicator ${enabled ? 'active' : 'inactive'}`;
+                
+                const icon = getCapabilityIcon(capability);
+                const name = getCapabilityName(capability);
+                
+                statusIndicator.innerHTML = `
+                    <div class="icon">${icon}</div>
+                    <div class="text">
+                        <div>${name}</div>
+                        <div style="font-size: 12px; color: #6c757d;">${enabled ? 'Available' : 'Not Available'}</div>
+                    </div>
+                    <div class="status">${enabled ? 'ON' : 'OFF'}</div>
+                `;
+                
+                statusContainer.appendChild(statusIndicator);
+            });
+        }
+
+        function getCapabilityIcon(capability) {
+            const icons = {
+                vrControllers: '🎮',
+                motionCapture: '📱',
+                smartMobility: '♿',
+                switchDevices: '🔘',
+                eyeTracking: '👁️',
+                voiceControl: '🎤'
+            };
+            return icons[capability] || '❓';
+        }
+
+        function getCapabilityName(capability) {
+            const names = {
+                vrControllers: 'VR Controllers',
+                motionCapture: 'Motion Capture',
+                smartMobility: 'Smart Mobility',
+                switchDevices: 'Switch Devices',
+                eyeTracking: 'Eye Tracking',
+                voiceControl: 'Voice Control'
+            };
+            return names[capability] || capability;
+        }
+
+        function logInput(type, value, source) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <span class="timestamp">${timestamp}</span>
+                <span class="type">${type}</span>
+                <span class="value">${value}</span>
+                <span style="color: #6c757d; font-size: 12px;">(${source})</span>
+            `;
+            
+            const inputLog = document.getElementById('input-log');
+            inputLog.appendChild(logEntry);
+            inputLog.scrollTop = inputLog.scrollHeight;
+            
+            // Update counters
+            inputCount++;
+            if (source === 'voice') voiceInputCount++;
+            else if (source === 'motion') gestureInputCount++;
+            else if (source === 'keyboard') keyboardInputCount++;
+        }
+
+        function testInput(type, value) {
+            logInput(type, value, 'test');
+            window.adaptiveInputHandler.triggerInputEvent(type, value);
+        }
+
+        function clearInputLog() {
+            const inputLog = document.getElementById('input-log');
+            inputLog.innerHTML = '<div class="log-entry"><span class="timestamp">Log cleared...</span></div>';
+        }
+
+        function startVoiceRecognition() {
+            if (window.assistiveDeviceManager && window.assistiveDeviceManager.startVoiceRecognition) {
+                window.assistiveDeviceManager.startVoiceRecognition();
+                isVoiceActive = true;
+                document.getElementById('start-voice').disabled = true;
+                document.getElementById('stop-voice').disabled = false;
+                logInput('voice', 'recognition started', 'voice');
+            }
+        }
+
+        function stopVoiceRecognition() {
+            if (window.assistiveDeviceManager && window.assistiveDeviceManager.stopVoiceRecognition) {
+                window.assistiveDeviceManager.stopVoiceRecognition();
+                isVoiceActive = false;
+                document.getElementById('start-voice').disabled = false;
+                document.getElementById('stop-voice').disabled = true;
+                logInput('voice', 'recognition stopped', 'voice');
+            }
+        }
+
+        function testGesture(gesture) {
+            logInput('gesture', gesture, 'test');
+            highlightGestureArea();
+        }
+
+        function highlightGestureArea() {
+            const gestureArea = document.getElementById('gesture-area');
+            gestureArea.classList.add('active');
+            setTimeout(() => {
+                gestureArea.classList.remove('active');
+            }, 1000);
+        }
+
+        function updateStatistics() {
+            document.getElementById('total-inputs').textContent = inputCount;
+            document.getElementById('voice-inputs').textContent = voiceInputCount;
+            document.getElementById('gesture-inputs').textContent = gestureInputCount;
+            document.getElementById('keyboard-inputs').textContent = keyboardInputCount;
+        }
+    </script>
+</body>
+</html>

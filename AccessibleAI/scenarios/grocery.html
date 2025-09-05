@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>VR Grocery Store</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <!-- Assistive Device Integration -->
+    <script src="../js/assistive-devices.js"></script>
+    <script src="../js/device-config.js"></script>
+    <script src="../js/adaptive-input.js"></script>
+    <!-- User Guidance System -->
+    <script src="../js/user-guidance.js"></script>
+    <script src="../js/guidance-config.js"></script>
+    <script src="../js/task-definitions.js"></script>
+  </head>
+  <body>
+    <!-- VR Navigation Overlay -->
+    <div id="vr-overlay" style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    ">
+      <div style="text-align: center; max-width: 600px; padding: 40px;">
+        <h1 style="font-size: 3rem; margin-bottom: 20px;">🛒 Grocery Store VR</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 30px; opacity: 0.9;">
+          Welcome to the virtual grocery store! Practice shopping skills in a safe, controlled environment.
+        </p>
+        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+          <button id="enter-vr-btn" style="
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          ">🚀 Enter VR Experience</button>
+          <button id="exit-vr-btn" style="
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          ">← Return to Library</button>
+        </div>
+        <div style="margin-top: 40px; font-size: 0.9rem; opacity: 0.7;">
+          <p>💡 Use WASD keys to move, mouse to look around, and click on objects to interact</p>
+          <p>♿ Full accessibility support with keyboard navigation and assistive devices</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- VR Controls Panel -->
+    <div id="vr-controls" style="
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 999;
+      display: none;
+    ">
+      <div style="
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 15px;
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+      ">
+        <button id="pause-btn" style="
+          background: #f39c12;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 8px;
+          margin-right: 10px;
+          cursor: pointer;
+        ">⏸️ Pause</button>
+        <button id="help-btn" style="
+          background: #3498db;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 8px;
+          margin-right: 10px;
+          cursor: pointer;
+        ">❓ Help</button>
+        <button id="exit-scenario-btn" style="
+          background: #e74c3c;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 8px;
+          cursor: pointer;
+        ">🚪 Exit</button>
+      </div>
+    </div>
+
+    <!-- Pause Menu -->
+    <div id="pause-menu" style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1001;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    ">
+      <div style="text-align: center; max-width: 500px; padding: 40px;">
+        <h2 style="font-size: 2.5rem; margin-bottom: 30px;">⏸️ Paused</h2>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <button id="resume-btn" style="
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+          ">▶️ Resume</button>
+          <button id="restart-btn" style="
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+          ">🔄 Restart</button>
+          <button id="settings-btn" style="
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+          ">⚙️ Settings</button>
+          <button id="exit-pause-btn" style="
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+          ">🚪 Exit to Library</button>
+        </div>
+      </div>
+    </div>
+
+    <a-scene>
+      <!-- Background + Floor -->
+      <a-sky color="#f2f2f2"></a-sky>
+      <a-plane rotation="-90 0 0" width="40" height="40" color="#d9d9d9"></a-plane>
+
+      <!-- Lighting -->
+      <a-entity light="type: ambient; intensity: 0.6"></a-entity>
+      <a-entity light="type: directional; intensity: 0.8" position="0 10 5"></a-entity>
+
+      <!-- Camera / Player -->
+      <a-entity id="player" position="0 1.6 8">
+        <a-entity camera look-controls wasd-controls></a-entity>
+      </a-entity>
+
+      <!-- Store Walls -->
+      <a-box position="0 2 -10" depth="0.5" height="4" width="20" color="#ffffff"></a-box>
+      <a-box position="0 2 10" depth="0.5" height="4" width="20" color="#ffffff"></a-box>
+      <a-box position="-10 2 0" depth="20" height="4" width="0.5" color="#ffffff"></a-box>
+      <a-box position="10 2 0" depth="20" height="4" width="0.5" color="#ffffff"></a-box>
+
+      <!-- Entrance Door -->
+      <a-box id="entranceDoor" position="0 1 10" depth="0.3" height="2.5" width="3" color="#87CEEB" opacity="0.6" 
+             class="clickable-object" 
+             animation__hover="property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200"
+             animation__leave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+             cursor="rayOrigin: mouse"
+             raycaster="objects: .clickable-object">
+      </a-box>
+      <a-text value="Entrance" position="0 3 9.8" align="center" width="6" color="black"></a-text>
+      <a-text value="Click to Enter" position="0 0.5 9.8" align="center" width="4" color="white" class="interaction-hint"></a-text>
+
+      <!-- Accessibility Ramp -->
+      <a-box id="entranceRamp" position="0 0.1 8" depth="2" height="0.1" width="4" color="#4CAF50" opacity="0.8" 
+             class="accessibility-feature"
+             animation__pulse="property: opacity; to: 0.4; dur: 1000; loop: true; dir: alternate">
+      </a-box>
+      <a-text value="♿ Wheelchair Access" position="0 0.3 8" align="center" width="6" color="white" class="accessibility-label"></a-text>
+      <a-text value="Ramp Available" position="0 0.1 8" align="center" width="5" color="white" class="accessibility-hint"></a-text>
+
+      <!-- Checkout Counter -->
+      <a-box id="checkoutCounter" position="0 1 -8" depth="2" height="1" width="5" color="#8B4513" 
+             class="clickable-object"
+             animation__hover="property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200"
+             animation__leave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+             cursor="rayOrigin: mouse"
+             raycaster="objects: .clickable-object">
+      </a-box>
+      <a-text value="Checkout" position="0 2 -8" align="center" width="8" color="black"></a-text>
+      <a-text value="Click to Checkout" position="0 0.3 -8" align="center" width="6" color="white" class="interaction-hint"></a-text>
+
+      <!-- Accessible Checkout Lane -->
+      <a-box id="accessibleCheckout" position="3 0.1 -8" depth="1.5" height="0.1" width="2" color="#2196F3" opacity="0.8" 
+             class="accessibility-feature"
+             animation__pulse="property: opacity; to: 0.4; dur: 1000; loop: true; dir: alternate">
+      </a-box>
+      <a-text value="♿ Accessible Lane" position="3 0.3 -8" align="center" width="5" color="white" class="accessibility-label"></a-text>
+      <a-text value="Wider Aisle" position="3 0.1 -8" align="center" width="4" color="white" class="accessibility-hint"></a-text>
+
+      <!-- ============================= -->
+      <!-- Fruits Section -->
+      <!-- ============================= -->
+      <!-- Shelf -->
+      <a-box id="fruitsShelf" position="-5 0.5 -5" depth="2" height="1" width="4" color="#c2c2c2" 
+             class="clickable-object"
+             animation__hover="property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200"
+             animation__leave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+             cursor="rayOrigin: mouse"
+             raycaster="objects: .clickable-object">
+      </a-box>
+      <a-text value="Fruits" position="-5 1.7 -5" align="center" width="6" color="black"></a-text>
+      <a-text value="Click to Browse" position="-5 0.2 -5" align="center" width="5" color="white" class="interaction-hint"></a-text>
+
+      <!-- Fruits placed ON shelf -->
+      <a-sphere position="-6 1 -5.3" radius="0.25" color="red"></a-sphere>    <!-- Apple -->
+      <a-sphere position="-5 1 -5.3" radius="0.25" color="yellow"></a-sphere> <!-- Lemon -->
+      <a-sphere position="-4 1 -5.3" radius="0.3" color="orange"></a-sphere>  <!-- Orange -->
+      <a-sphere position="-5 1 -4.7" radius="0.25" color="green"></a-sphere>  <!-- Green Apple -->
+
+      <!-- ============================= -->
+      <!-- Vegetables Section -->
+      <!-- ============================= -->
+      <a-box id="vegetablesShelf" position="5 0.5 -5" depth="2" height="1" width="4" color="#c2c2c2" 
+             class="clickable-object"
+             animation__hover="property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200"
+             animation__leave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+             cursor="rayOrigin: mouse"
+             raycaster="objects: .clickable-object">
+      </a-box>
+      <a-text value="Vegetables" position="5 1.7 -5" align="center" width="8" color="black"></a-text>
+      <a-text value="Click to Browse" position="5 0.2 -5" align="center" width="5" color="white" class="interaction-hint"></a-text>
+
+      <!-- Veggies on shelf -->
+      <a-cylinder position="4 1 -5.3" radius="0.15" height="0.4" color="orange"></a-cylinder> <!-- Carrot -->
+      <a-cylinder position="5 1 -5.3" radius="0.2" height="0.3" color="green"></a-cylinder>  <!-- Cucumber -->
+      <a-sphere   position="6 1 -5.3" radius="0.3" color="purple"></a-sphere>                <!-- Brinjal -->
+      <a-sphere   position="5 1 -4.7" radius="0.25" color="#90EE90"></a-sphere>              <!-- Lettuce -->
+
+      <!-- ============================= -->
+      <!-- Dairy Section -->
+      <!-- ============================= -->
+      <a-box position="-5 0.5 0" depth="2" height="1" width="4" color="#c2c2c2"></a-box>
+      <a-text value="Dairy" position="-5 1.7 0" align="center" width="6" color="black"></a-text>
+
+      <!-- Dairy on shelf -->
+      <a-box position="-6 1 -0.2" depth="0.5" height="0.8" width="0.5" color="white"></a-box>   <!-- Milk carton -->
+      <a-cylinder position="-5 1 0.3" radius="0.25" height="0.5" color="#FFD700"></a-cylinder> <!-- Cheese -->
+      <a-box position="-4 1 -0.2" depth="0.5" height="0.6" width="0.5" color="#add8e6"></a-box> <!-- Yogurt -->
+
+      <!-- ============================= -->
+      <!-- Bakery Section -->
+      <!-- ============================= -->
+      <a-box position="5 0.5 0" depth="2" height="1" width="4" color="#c2c2c2"></a-box>
+      <a-text value="Bakery" position="5 1.7 0" align="center" width="6" color="black"></a-text>
+
+      <!-- Bakery items on shelf -->
+      <a-box position="4.2 1 0" depth="0.8" height="0.4" width="1" color="#deb887"></a-box> <!-- Bread loaf -->
+      <a-sphere position="5.5 1 -0.2" radius="0.25" color="#d2b48c"></a-sphere>            <!-- Bun -->
+      <a-cylinder position="5 1 0.4" radius="0.25" height="0.2" color="#f5deb3"></a-cylinder> <!-- Cake -->
+
+      <!-- Some People -->
+      <a-cylinder position="-2 1 -2" radius="0.3" height="1.6" color="#87CEFA"></a-cylinder>
+      <a-sphere position="-2 2 -2" radius="0.35" color="#ffe0bd"></a-sphere>
+
+      <a-cylinder position="2 1 -6" radius="0.3" height="1.6" color="#32CD32"></a-cylinder>
+      <a-sphere position="2 2 -6" radius="0.35" color="#ffe0bd"></a-sphere>
+
+    </a-scene>
+
+    <!-- Back to Library Button - 2D Overlay -->
+    <div id="backButton" style="
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.4)'" 
+       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(102, 126, 234, 0.3)'"
+       onclick="window.location.href='../index.html'">
+      <span>🏠</span>
+      <span>Back to Library</span>
+    </div>
+
+    <script>
+      // Progress tracking
+      const PROGRESS_KEY = 'vr_scenarios_progress';
+      
+      function markScenarioVisited() {
+        const visited = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '[]');
+        if (!visited.includes('grocery')) {
+          visited.push('grocery');
+          localStorage.setItem(PROGRESS_KEY, JSON.stringify(visited));
+        }
+      }
+      
+      // Interaction feedback system
+      function createAudioContext() {
+        if (!window.audioContext) {
+          window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        return window.audioContext;
+      }
+      
+      function playInteractionSound(frequency = 800, duration = 0.1) {
+        try {
+          const audioContext = createAudioContext();
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+          
+          oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+          oscillator.type = 'sine';
+          
+          gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+          
+          oscillator.start(audioContext.currentTime);
+          oscillator.stop(audioContext.currentTime + duration);
+        } catch (e) {
+          console.log('Audio not available');
+        }
+      }
+      
+      function showInteractionFeedback(element, message) {
+        // Create feedback text
+        const feedback = document.createElement('a-text');
+        feedback.setAttribute('value', message);
+        feedback.setAttribute('position', '0 2 0');
+        feedback.setAttribute('align', 'center');
+        feedback.setAttribute('width', '8');
+        feedback.setAttribute('color', '#00ff00');
+        feedback.setAttribute('animation', 'property: opacity; to: 0; dur: 2000; startEvents: fade');
+        feedback.setAttribute('animation__fade', 'property: position; to: 0 4 0; dur: 2000');
+        
+        element.appendChild(feedback);
+        
+        // Remove feedback after animation
+        setTimeout(() => {
+          if (feedback.parentNode) {
+            feedback.parentNode.removeChild(feedback);
+          }
+        }, 2000);
+      }
+      
+      // Adaptive Navigation System
+      function setupAdaptiveNavigation() {
+        // Check for mobility assistance preferences
+        const mobilityType = localStorage.getItem('mobilityType') || 'none';
+        
+        // Adjust navigation based on mobility type
+        switch(mobilityType) {
+          case 'wheelchair':
+            highlightWheelchairPaths();
+            break;
+          case 'walker':
+            highlightWalkerPaths();
+            break;
+          case 'prosthetic':
+            highlightProstheticPaths();
+            break;
+          default:
+            showAllAccessibilityFeatures();
+        }
+        
+        // Add accessibility feature interactions
+        const accessibilityFeatures = document.querySelectorAll('.accessibility-feature');
+        accessibilityFeatures.forEach(feature => {
+          feature.addEventListener('click', function() {
+            playInteractionSound(500, 0.3);
+            showInteractionFeedback(this, 'Accessibility feature activated!');
+          });
+        });
+      }
+      
+      function highlightWheelchairPaths() {
+        // Highlight ramps and wide paths
+        const wheelchairFeatures = document.querySelectorAll('#entranceRamp, #accessibleCheckout');
+        wheelchairFeatures.forEach(feature => {
+          feature.setAttribute('material', 'color: #4CAF50; opacity: 0.9');
+          feature.setAttribute('animation__highlight', 'property: scale; to: 1.1 1.1 1.1; dur: 500; loop: true; dir: alternate');
+        });
+        
+        // Add wheelchair icon to path
+        addNavigationIcon('wheelchair', '0 0.2 6', '♿ Wheelchair Route');
+      }
+      
+      function highlightWalkerPaths() {
+        // Highlight stable surfaces and handrails
+        const walkerFeatures = document.querySelectorAll('#entranceRamp, #accessibleCheckout');
+        walkerFeatures.forEach(feature => {
+          feature.setAttribute('material', 'color: #FF9800; opacity: 0.9');
+          feature.setAttribute('animation__highlight', 'property: scale; to: 1.05 1.05 1.05; dur: 800; loop: true; dir: alternate');
+        });
+        
+        // Add walker icon to path
+        addNavigationIcon('walker', '0 0.2 6', '🚶 Walker Route');
+      }
+      
+      function highlightProstheticPaths() {
+        // Highlight even surfaces and clear paths
+        const prostheticFeatures = document.querySelectorAll('#entranceRamp, #accessibleCheckout');
+        prostheticFeatures.forEach(feature => {
+          feature.setAttribute('material', 'color: #9C27B0; opacity: 0.9');
+          feature.setAttribute('animation__highlight', 'property: scale; to: 1.08 1.08 1.08; dur: 600; loop: true; dir: alternate');
+        });
+        
+        // Add prosthetic icon to path
+        addNavigationIcon('prosthetic', '0 0.2 6', '🦿 Prosthetic Route');
+      }
+      
+      function showAllAccessibilityFeatures() {
+        // Show all accessibility features with standard highlighting
+        const accessibilityFeatures = document.querySelectorAll('.accessibility-feature');
+        accessibilityFeatures.forEach(feature => {
+          feature.setAttribute('animation__pulse', 'property: opacity; to: 0.4; dur: 1000; loop: true; dir: alternate');
+        });
+      }
+      
+      function addNavigationIcon(type, position, label) {
+        const icon = document.createElement('a-text');
+        icon.setAttribute('value', type === 'wheelchair' ? '♿' : type === 'walker' ? '🚶' : '🦿');
+        icon.setAttribute('position', position);
+        icon.setAttribute('align', 'center');
+        icon.setAttribute('width', '4');
+        icon.setAttribute('color', '#ffffff');
+        icon.setAttribute('animation__float', 'property: position; to: 0 0.5 6; dur: 2000; loop: true; dir: alternate');
+        
+        const labelText = document.createElement('a-text');
+        labelText.setAttribute('value', label);
+        labelText.setAttribute('position', '0 0.8 6');
+        labelText.setAttribute('align', 'center');
+        labelText.setAttribute('width', '6');
+        labelText.setAttribute('color', '#ffffff');
+        
+        document.querySelector('a-scene').appendChild(icon);
+        document.querySelector('a-scene').appendChild(labelText);
+      }
+      
+      function setupInteractions() {
+        const clickableObjects = document.querySelectorAll('.clickable-object');
+        
+        clickableObjects.forEach(obj => {
+          obj.addEventListener('click', function() {
+            // Visual feedback
+            this.setAttribute('animation__click', 'property: scale; to: 1.1 1.1 1.1; dur: 100; startEvents: click');
+            this.setAttribute('animation__reset', 'property: scale; to: 1 1 1; dur: 100; startEvents: click; delay: 100');
+            
+            // Audio feedback
+            playInteractionSound(600, 0.2);
+            
+            // Text feedback
+            let message = 'Interacted!';
+            switch(this.id) {
+              case 'entranceDoor':
+                message = 'Welcome to the store!';
+                break;
+              case 'checkoutCounter':
+                message = 'Ready to checkout!';
+                break;
+              case 'fruitsShelf':
+                message = 'Fresh fruits available!';
+                break;
+              case 'vegetablesShelf':
+                message = 'Fresh vegetables here!';
+                break;
+            }
+            showInteractionFeedback(this, message);
+          });
+          
+          // Hover effects
+          obj.addEventListener('mouseenter', function() {
+            this.setAttribute('material', 'color: #ffff00; opacity: 0.8');
+            playInteractionSound(400, 0.1);
+          });
+          
+          obj.addEventListener('mouseleave', function() {
+            // Reset to original color
+            const originalColor = this.getAttribute('color');
+            this.setAttribute('material', `color: ${originalColor}; opacity: 0.6`);
+          });
+        });
+      }
+      
+      // Mark scenario as visited when loaded
+      document.addEventListener('DOMContentLoaded', function() {
+        markScenarioVisited();
+        setupInteractions();
+        setupAdaptiveNavigation();
+        initializeAssistiveDevices();
+        initializeGuidanceSystem();
+        
+        const backButton = document.getElementById('backButton');
+        if (backButton) {
+          backButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = '../index.html';
+          });
+        }
+      });
+      
+      // Initialize assistive device system for VR scenario
+      function initializeAssistiveDevices() {
+        // Wait for device manager to be ready
+        if (window.assistiveDeviceManager) {
+          // Initialize adaptive input handler
+          window.adaptiveInputHandler = new AdaptiveInputHandler(window.assistiveDeviceManager);
+          
+          // Set up VR-specific input handling
+          setupVRInputHandling();
+          
+          console.log('Assistive device system initialized for VR scenario');
+        } else {
+          // Retry after a short delay
+          setTimeout(initializeAssistiveDevices, 100);
+        }
+      }
+      
+      // Set up VR-specific input handling
+      function setupVRInputHandling() {
+        // Listen for adaptive input events
+        document.addEventListener('adaptiveInput', function(event) {
+          const { type, value, mode } = event.detail;
+          handleVRInput(type, value);
+        });
+        
+        // Listen for assistive input events
+        document.addEventListener('assistiveInput', function(event) {
+          const { type, value, profile } = event.detail;
+          handleVRInput(type, value);
+        });
+      }
+      
+      // Handle VR input
+      function handleVRInput(type, value) {
+        switch(type) {
+          case 'move':
+            handleVRMovement(value);
+            break;
+          case 'interact':
+            handleVRInteraction(value);
+            break;
+          case 'gesture':
+            handleVRGesture(value);
+            break;
+          case 'voice':
+            handleVRVoice(value);
+            break;
+        }
+      }
+      
+      // Handle VR movement
+      function handleVRMovement(value) {
+        const player = document.getElementById('player');
+        if (!player) return;
+        
+        const currentPosition = player.getAttribute('position');
+        const moveDistance = 1.0;
+        
+        switch(value) {
+          case 'forward':
+          case 'w':
+          case 'arrow':
+            player.setAttribute('position', {
+              x: currentPosition.x,
+              y: currentPosition.y,
+              z: currentPosition.z - moveDistance
+            });
+            break;
+          case 'backward':
+          case 's':
+            player.setAttribute('position', {
+              x: currentPosition.x,
+              y: currentPosition.y,
+              z: currentPosition.z + moveDistance
+            });
+            break;
+          case 'left':
+          case 'a':
+            player.setAttribute('position', {
+              x: currentPosition.x - moveDistance,
+              y: currentPosition.y,
+              z: currentPosition.z
+            });
+            break;
+          case 'right':
+          case 'd':
+            player.setAttribute('position', {
+              x: currentPosition.x + moveDistance,
+              y: currentPosition.y,
+              z: currentPosition.z
+            });
+            break;
+        }
+        
+        // Provide haptic feedback
+        if (window.assistiveDeviceManager) {
+          window.assistiveDeviceManager.provideHapticFeedback(0.3, 100);
+        }
+      }
+      
+      // Handle VR interaction
+      function handleVRInteraction(value) {
+        // Find the closest interactive object
+        const interactiveObjects = document.querySelectorAll('.clickable-object');
+        const player = document.getElementById('player');
+        
+        if (!player || interactiveObjects.length === 0) return;
+        
+        const playerPosition = player.getAttribute('position');
+        let closestObject = null;
+        let closestDistance = Infinity;
+        
+        interactiveObjects.forEach(obj => {
+          const objPosition = obj.getAttribute('position');
+          const distance = Math.sqrt(
+            Math.pow(playerPosition.x - objPosition.x, 2) +
+            Math.pow(playerPosition.z - objPosition.z, 2)
+          );
+          
+          if (distance < closestDistance && distance < 3) { // Within interaction range
+            closestDistance = distance;
+            closestObject = obj;
+          }
+        });
+        
+        if (closestObject) {
+          // Trigger interaction
+          closestObject.click();
+          
+          // Provide haptic feedback
+          if (window.assistiveDeviceManager) {
+            window.assistiveDeviceManager.provideHapticFeedback(0.7, 150);
+          }
+        }
+      }
+      
+      // Handle VR gesture
+      function handleVRGesture(value) {
+        const gestureMap = {
+          'swipe_up': 'move_forward',
+          'swipe_down': 'move_backward',
+          'swipe_left': 'move_left',
+          'swipe_right': 'move_right',
+          'tap': 'interact',
+          'double_tap': 'menu'
+        };
+        
+        const mappedAction = gestureMap[value];
+        if (mappedAction) {
+          if (mappedAction.startsWith('move_')) {
+            handleVRMovement(mappedAction.replace('move_', ''));
+          } else if (mappedAction === 'interact') {
+            handleVRInteraction('gesture');
+          }
+        }
+      }
+      
+      // Handle VR voice commands
+      function handleVRVoice(value) {
+        // Process voice commands for VR navigation
+        const voiceCommands = {
+          'move forward': () => handleVRMovement('forward'),
+          'move back': () => handleVRMovement('backward'),
+          'move left': () => handleVRMovement('left'),
+          'move right': () => handleVRMovement('right'),
+          'interact': () => handleVRInteraction('voice'),
+          'select': () => handleVRInteraction('voice'),
+          'help': () => showVRHelp()
+        };
+        
+        const action = voiceCommands[value];
+        if (action) {
+          action();
+        }
+      }
+      
+      // Show VR help
+      function showVRHelp() {
+        const helpText = document.createElement('a-text');
+        helpText.setAttribute('value', 'Voice Commands: move forward/back/left/right, interact, select, help');
+        helpText.setAttribute('position', '0 3 0');
+        helpText.setAttribute('align', 'center');
+        helpText.setAttribute('width', '8');
+        helpText.setAttribute('color', '#3498db');
+        helpText.setAttribute('animation', 'property: opacity; to: 0; dur: 5000; startEvents: fade');
+        
+        document.querySelector('a-scene').appendChild(helpText);
+        
+        setTimeout(() => {
+          if (helpText.parentNode) {
+            helpText.parentNode.removeChild(helpText);
+          }
+        }, 5000);
+      }
+      
+      // Initialize guidance system for VR scenario
+      function initializeGuidanceSystem() {
+        // Wait for guidance system to be ready
+        if (window.UserGuidanceSystem) {
+          // Initialize guidance system
+          window.guidanceSystem = new UserGuidanceSystem();
+          
+          // Initialize guidance configuration interface
+          window.guidanceConfigInterface = new GuidanceConfigInterface(window.guidanceSystem);
+          
+          // Set up guidance event listeners
+          setupGuidanceEventListeners();
+          
+          // Start grocery shopping task
+          startGroceryTask();
+          
+          console.log('Guidance system initialized for grocery scenario');
+        } else {
+          // Retry after a short delay
+          setTimeout(initializeGuidanceSystem, 100);
+        }
+      }
+      
+      // Set up guidance event listeners
+      function setupGuidanceEventListeners() {
+        // Listen for task step completed events
+        document.addEventListener('taskStepCompleted', function(event) {
+          const { step } = event.detail;
+          console.log('Task step completed:', step.name);
+          
+          // Provide visual feedback
+          showStepCompletionFeedback(step);
+        });
+        
+        // Listen for task completed events
+        document.addEventListener('taskCompleted', function(event) {
+          console.log('Task completed!');
+          
+          // Show completion celebration
+          showTaskCompletionCelebration();
+        });
+        
+        // Listen for object highlighted events
+        document.addEventListener('objectHighlighted', function(event) {
+          const { element, step } = event.detail;
+          console.log('Object highlighted:', element.id, 'for step:', step.name);
+          
+          // Add additional visual effects
+          addHighlightEffects(element);
+        });
+      }
+      
+      // Start grocery shopping task
+      function startGroceryTask() {
+        if (window.taskDefinitions) {
+          const groceryTask = window.taskDefinitions.getTask('grocery');
+          if (groceryTask && window.guidanceSystem) {
+            // Add a small delay to ensure everything is loaded
+            setTimeout(() => {
+              window.guidanceSystem.startGuidance(groceryTask);
+            }, 1000);
+          }
+        }
+      }
+      
+      // Show step completion feedback
+      function showStepCompletionFeedback(step) {
+        // Create completion feedback in VR space
+        const feedback = document.createElement('a-text');
+        feedback.setAttribute('value', `✓ ${step.name} Completed!`);
+        feedback.setAttribute('position', '0 3 0');
+        feedback.setAttribute('align', 'center');
+        feedback.setAttribute('width', '8');
+        feedback.setAttribute('color', '#27ae60');
+        feedback.setAttribute('animation', 'property: opacity; to: 0; dur: 3000; startEvents: fade');
+        feedback.setAttribute('animation__fade', 'property: position; to: 0 5 0; dur: 3000');
+        
+        document.querySelector('a-scene').appendChild(feedback);
+        
+        // Remove feedback after animation
+        setTimeout(() => {
+          if (feedback.parentNode) {
+            feedback.parentNode.removeChild(feedback);
+          }
+        }, 3000);
+      }
+      
+      // Show task completion celebration
+      function showTaskCompletionCelebration() {
+        // Create celebration effect
+        const celebration = document.createElement('a-text');
+        celebration.setAttribute('value', '🎉 Shopping Complete! 🎉');
+        celebration.setAttribute('position', '0 2 0');
+        celebration.setAttribute('align', 'center');
+        celebration.setAttribute('width', '10');
+        celebration.setAttribute('color', '#e74c3c');
+        celebration.setAttribute('animation', 'property: scale; to: 1.2 1.2 1.2; dur: 1000; loop: true; dir: alternate');
+        
+        document.querySelector('a-scene').appendChild(celebration);
+        
+        // Add confetti effect
+        createConfettiEffect();
+        
+        // Remove celebration after 5 seconds
+        setTimeout(() => {
+          if (celebration.parentNode) {
+            celebration.parentNode.removeChild(celebration);
+          }
+        }, 5000);
+      }
+      
+      // Create confetti effect
+      function createConfettiEffect() {
+        for (let i = 0; i < 20; i++) {
+          const confetti = document.createElement('a-sphere');
+          confetti.setAttribute('position', `${(Math.random() - 0.5) * 10} ${Math.random() * 5 + 2} ${(Math.random() - 0.5) * 10}`);
+          confetti.setAttribute('radius', '0.1');
+          confetti.setAttribute('color', `hsl(${Math.random() * 360}, 100%, 50%)`);
+          confetti.setAttribute('animation', `property: position; to: ${(Math.random() - 0.5) * 10} -2 ${(Math.random() - 0.5) * 10}; dur: 3000; startEvents: fall`);
+          confetti.setAttribute('animation__fall', 'property: rotation; to: 0 360 0; dur: 1000; loop: true');
+          
+          document.querySelector('a-scene').appendChild(confetti);
+          
+          // Remove confetti after animation
+          setTimeout(() => {
+            if (confetti.parentNode) {
+              confetti.parentNode.removeChild(confetti);
+            }
+          }, 3000);
+        }
+      }
+      
+      // Add highlight effects
+      function addHighlightEffects(element) {
+        // Add a subtle glow effect to highlighted elements
+        const originalMaterial = element.getAttribute('material');
+        element.setAttribute('material', `${originalMaterial}; emissive: #3498db; emissiveIntensity: 0.3`);
+        
+        // Reset after highlighting
+        setTimeout(() => {
+          element.setAttribute('material', originalMaterial);
+        }, 3000);
+      }
+      
+      // Enhanced interaction handling with guidance integration
+      function setupInteractions() {
+        const clickableObjects = document.querySelectorAll('.clickable-object');
+        
+        clickableObjects.forEach(obj => {
+          obj.addEventListener('click', function() {
+            // Visual feedback
+            this.setAttribute('animation__click', 'property: scale; to: 1.1 1.1 1.1; dur: 100; startEvents: click');
+            this.setAttribute('animation__reset', 'property: scale; to: 1 1 1; dur: 100; startEvents: click; delay: 100');
+            
+            // Audio feedback
+            playInteractionSound(600, 0.2);
+            
+            // Check if this click completes a task step
+            checkTaskStepCompletion(this);
+            
+            // Text feedback
+            let message = 'Interacted!';
+            switch(this.id) {
+              case 'entranceDoor':
+                message = 'Welcome to the store!';
+                break;
+              case 'checkoutCounter':
+                message = 'Ready to checkout!';
+                break;
+              case 'fruitsShelf':
+                message = 'Fresh fruits available!';
+                break;
+              case 'vegetablesShelf':
+                message = 'Fresh vegetables here!';
+                break;
+            }
+            showInteractionFeedback(this, message);
+          });
+          
+          // Hover effects
+          obj.addEventListener('mouseenter', function() {
+            this.setAttribute('material', 'color: #ffff00; opacity: 0.8');
+            playInteractionSound(400, 0.1);
+          });
+          
+          obj.addEventListener('mouseleave', function() {
+            // Reset to original color
+            const originalColor = this.getAttribute('color');
+            this.setAttribute('material', `color: ${originalColor}; opacity: 0.6`);
+          });
+        });
+      }
+      
+      // Check if interaction completes a task step
+      function checkTaskStepCompletion(element) {
+        if (window.guidanceSystem && window.guidanceSystem.isActive) {
+          const currentTask = window.guidanceSystem.currentTask;
+          if (currentTask && currentTask.steps) {
+            const currentStep = currentTask.steps[window.guidanceSystem.taskProgress];
+            if (currentStep && currentStep.target === `#${element.id}`) {
+              // This interaction completes the current step
+              window.guidanceSystem.completeTaskStep(currentStep);
+            }
+          }
+        }
+      }
+
+      // VR Navigation and Controls
+      document.addEventListener('DOMContentLoaded', function() {
+        const vrOverlay = document.getElementById('vr-overlay');
+        const vrControls = document.getElementById('vr-controls');
+        const pauseMenu = document.getElementById('pause-menu');
+        const enterVrBtn = document.getElementById('enter-vr-btn');
+        const exitVrBtn = document.getElementById('exit-vr-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const helpBtn = document.getElementById('help-btn');
+        const exitScenarioBtn = document.getElementById('exit-scenario-btn');
+        const resumeBtn = document.getElementById('resume-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const settingsBtn = document.getElementById('settings-btn');
+        const exitPauseBtn = document.getElementById('exit-pause-btn');
+
+        // Enter VR Experience
+        enterVrBtn.addEventListener('click', function() {
+          vrOverlay.style.display = 'none';
+          vrControls.style.display = 'block';
+          
+          // Enable VR mode
+          const scene = document.querySelector('a-scene');
+          if (scene.hasLoaded) {
+            scene.enterVR();
+          }
+        });
+
+        // Exit to Library
+        exitVrBtn.addEventListener('click', function() {
+          window.location.href = '../index.html';
+        });
+
+        // Pause Scenario
+        pauseBtn.addEventListener('click', function() {
+          pauseMenu.style.display = 'flex';
+          vrControls.style.display = 'none';
+        });
+
+        // Resume Scenario
+        resumeBtn.addEventListener('click', function() {
+          pauseMenu.style.display = 'none';
+          vrControls.style.display = 'block';
+        });
+
+        // Restart Scenario
+        restartBtn.addEventListener('click', function() {
+          if (confirm('Are you sure you want to restart the scenario? Your progress will be lost.')) {
+            location.reload();
+          }
+        });
+
+        // Settings
+        settingsBtn.addEventListener('click', function() {
+          alert('Settings panel would open here. This would include:\n\n• Graphics quality\n• Audio settings\n• Accessibility options\n• Control preferences\n• Difficulty level');
+        });
+
+        // Help
+        helpBtn.addEventListener('click', function() {
+          alert('Help & Controls:\n\n• WASD: Move around\n• Mouse: Look around\n• Click: Interact with objects\n• ESC: Pause menu\n• Tab: Show/hide controls\n\nAccessibility:\n• Full keyboard navigation\n• Screen reader support\n• Voice commands available\n• Assistive device support');
+        });
+
+        // Exit Scenario
+        exitScenarioBtn.addEventListener('click', function() {
+          if (confirm('Are you sure you want to exit the scenario?')) {
+            window.location.href = '../index.html';
+          }
+        });
+
+        // Exit from Pause Menu
+        exitPauseBtn.addEventListener('click', function() {
+          window.location.href = '../index.html';
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+          switch(e.key) {
+            case 'Escape':
+              if (pauseMenu.style.display === 'none' || pauseMenu.style.display === '') {
+                pauseMenu.style.display = 'flex';
+                vrControls.style.display = 'none';
+              } else {
+                pauseMenu.style.display = 'none';
+                vrControls.style.display = 'block';
+              }
+              break;
+            case 'Tab':
+              e.preventDefault();
+              if (vrControls.style.display === 'none' || vrControls.style.display === '') {
+                vrControls.style.display = 'block';
+              } else {
+                vrControls.style.display = 'none';
+              }
+              break;
+            case 'F1':
+              e.preventDefault();
+              helpBtn.click();
+              break;
+          }
+        });
+
+        // Auto-hide controls after 5 seconds of inactivity
+        let controlsTimeout;
+        function resetControlsTimeout() {
+          clearTimeout(controlsTimeout);
+          if (vrControls.style.display !== 'none') {
+            controlsTimeout = setTimeout(() => {
+              vrControls.style.opacity = '0.3';
+            }, 5000);
+          }
+        }
+
+        // Show controls on mouse movement
+        document.addEventListener('mousemove', function() {
+          if (vrControls.style.display !== 'none') {
+            vrControls.style.opacity = '1';
+            resetControlsTimeout();
+          }
+        });
+
+        // Initialize controls timeout
+        resetControlsTimeout();
+
+        // Fullscreen support
+        function toggleFullscreen() {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+              console.log('Error attempting to enable fullscreen:', err);
+            });
+          } else {
+            document.exitFullscreen();
+          }
+        }
+
+        // Add fullscreen button to controls
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.innerHTML = '⛶ Fullscreen';
+        fullscreenBtn.style.cssText = `
+          background: #9b59b6;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 8px;
+          margin-right: 10px;
+          cursor: pointer;
+        `;
+        fullscreenBtn.addEventListener('click', toggleFullscreen);
+        vrControls.querySelector('div').insertBefore(fullscreenBtn, helpBtn);
+
+        // VR detection and setup
+        if (navigator.xr) {
+          navigator.xr.isSessionSupported('immersive-vr').then(supported => {
+            if (supported) {
+              console.log('VR headset detected and supported');
+            } else {
+              console.log('VR headset not detected, using desktop mode');
+            }
+          });
+        }
+
+        // Progress tracking
+        let startTime = Date.now();
+        let interactions = 0;
+
+        // Track interactions
+        document.addEventListener('click', function() {
+          interactions++;
+        });
+
+        // Save progress on exit
+        window.addEventListener('beforeunload', function() {
+          const sessionData = {
+            scenario: 'grocery',
+            duration: Date.now() - startTime,
+            interactions: interactions,
+            timestamp: new Date().toISOString()
+          };
+          
+          // Save to localStorage
+          const progress = JSON.parse(localStorage.getItem('vr_scenarios_progress') || '[]');
+          progress.push(sessionData);
+          localStorage.setItem('vr_scenarios_progress', JSON.stringify(progress));
+        });
+      });
+    </script>
+  </body>
+</html>

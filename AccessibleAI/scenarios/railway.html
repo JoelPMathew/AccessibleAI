@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>MGR Central Railway Station VR</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  </head>
+  <body>
+    <a-scene>
+      <!-- Sky & Ground -->
+      <a-sky color="#87ceeb"></a-sky>
+      <a-plane rotation="-90 0 0" width="200" height="200" color="#d7ccc8"></a-plane>
+
+      <!-- Station Building -->
+      <a-box position="0 3 -40" width="60" height="8" depth="4" color="#6d4c41"></a-box>
+      <a-plane id="stationSign" position="0 6 -39.9" width="20" height="2.5" color="#e53935" 
+               class="clickable-object"
+               animation__hover="property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200"
+               animation__leave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+               cursor="rayOrigin: mouse"
+               raycaster="objects: .clickable-object">
+        <a-entity text="value: MGR CENTRAL; align: center; width: 14; color: white" position="0 0 0.1"></a-entity>
+      </a-plane>
+      <a-text value="Click for Info" position="0 4 -39.9" align="center" width="6" color="white" class="interaction-hint"></a-text>
+
+      <!-- Accessibility Ramp -->
+      <a-box id="stationRamp" position="0 0.1 -38" depth="3" height="0.1" width="6" color="#4CAF50" opacity="0.8" 
+             class="accessibility-feature"
+             animation__pulse="property: opacity; to: 0.4; dur: 1000; loop: true; dir: alternate">
+      </a-box>
+      <a-text value="♿ Wheelchair Access" position="0 0.3 -38" align="center" width="6" color="white" class="accessibility-label"></a-text>
+      <a-text value="Ramp to Platform" position="0 0.1 -38" align="center" width="5" color="white" class="accessibility-hint"></a-text>
+
+      <!-- Ticket Counter -->
+      <a-box id="ticketCounter" position="-20 2 -35" width="8" height="4" depth="2" color="#fbc02d" 
+             class="clickable-object"
+             animation__hover="property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200"
+             animation__leave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+             cursor="rayOrigin: mouse"
+             raycaster="objects: .clickable-object">
+      </a-box>
+      <a-entity position="-20 4 -34.9" text="value: Ticket Counter; align: center; width: 6; color: black"></a-entity>
+      <a-text value="Click to Buy Tickets" position="-20 1 -35" align="center" width="5" color="black" class="interaction-hint"></a-text>
+
+      <!-- Platforms -->
+      <a-box position="0 0.1 -10" width="40" height="0.2" depth="8" color="#cfd8dc"></a-box>
+      <a-box position="0 0.1 -20" width="40" height="0.2" depth="8" color="#b0bec5"></a-box>
+      <a-box position="0 0.1 -30" width="40" height="0.2" depth="8" color="#90a4ae"></a-box>
+
+      <!-- Accessible Platform Areas -->
+      <a-box id="accessiblePlatform1" position="0 0.1 -10" width="40" height="0.2" depth="8" color="#2196F3" opacity="0.6" 
+             class="accessibility-feature"
+             animation__pulse="property: opacity; to: 0.3; dur: 1000; loop: true; dir: alternate">
+      </a-box>
+      <a-text value="♿ Accessible Platform" position="0 0.4 -10" align="center" width="6" color="white" class="accessibility-label"></a-text>
+      <a-text value="Wide Aisle" position="0 0.2 -10" align="center" width="4" color="white" class="accessibility-hint"></a-text>
+
+      <!-- Platform Boards -->
+      <a-plane position="-15 2 -10" width="8" height="1.5" color="#1565c0">
+        <a-entity text="value: Platform 1; align: center; width: 5; color: white" position="0 0 0.1"></a-entity>
+      </a-plane>
+      <a-plane position="-15 2 -20" width="8" height="1.5" color="#1565c0">
+        <a-entity text="value: Platform 2; align: center; width: 5; color: white" position="0 0 0.1"></a-entity>
+      </a-plane>
+      <a-plane position="-15 2 -30" width="8" height="1.5" color="#1565c0">
+        <a-entity text="value: Platform 3; align: center; width: 5; color: white" position="0 0 0.1"></a-entity>
+      </a-plane>
+
+      <!-- Tracks -->
+      <a-box position="0 0 -12" width="40" height="0.1" depth="1" color="#424242"></a-box>
+      <a-box position="0 0 -22" width="40" height="0.1" depth="1" color="#424242"></a-box>
+      <a-box position="0 0 -32" width="40" height="0.1" depth="1" color="#424242"></a-box>
+
+      <!-- Train on Platform 1 (Moving Animation) -->
+      <a-entity position="25 0 -12" animation="property: position; to: -25 0 -12; dur: 15000; loop: true">
+        <a-box position="0 1 0" width="12" height="2" depth="3" color="#1976d2"></a-box>
+        <a-box position="14 1 0" width="12" height="2" depth="3" color="#29b6f6"></a-box>
+        <a-box position="28 1 0" width="12" height="2" depth="3" color="#29b6f6"></a-box>
+        <!-- Windows -->
+        <a-plane position="0 1.5 1.6" width="10" height="0.6" color="#bbdefb"></a-plane>
+        <a-plane position="14 1.5 1.6" width="10" height="0.6" color="#bbdefb"></a-plane>
+        <a-plane position="28 1.5 1.6" width="10" height="0.6" color="#bbdefb"></a-plane>
+      </a-entity>
+
+      <!-- Static Train on Platform 2 (Enterable) -->
+      <a-box id="train" position="0 1 -22" width="18" height="2" depth="3" color="#8e24aa" 
+             class="clickable-object"
+             animation__hover="property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200"
+             animation__leave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+             cursor="rayOrigin: mouse"
+             raycaster="objects: .clickable-object">
+      </a-box>
+      <a-plane position="0 1.5 -20.4" width="15" height="0.8" color="#e1bee7"></a-plane>
+      <!-- Open door -->
+      <a-box position="-6 1 -22.1" width="1" height="2" depth="0.1" color="#ffffff"></a-box>
+      <a-text value="Click to Board Train" position="0 0.5 -22" align="center" width="6" color="white" class="interaction-hint"></a-text>
+
+      <!-- Train on Platform 3 (Moving Animation) -->
+      <a-entity position="-25 0 -32" animation="property: position; to: 25 0 -32; dur: 15000; loop: true">
+        <a-box position="0 1 0" width="12" height="2" depth="3" color="#d32f2f"></a-box>
+        <a-box position="14 1 0" width="12" height="2" depth="3" color="#f44336"></a-box>
+        <a-box position="28 1 0" width="12" height="2" depth="3" color="#f44336"></a-box>
+      </a-entity>
+
+      <!-- Camera Rig -->
+      <a-entity id="rig" position="0 1.6 5">
+        <a-entity camera look-controls wasd-controls="acceleration: 20">
+          <a-entity cursor="fuse: false" position="0 0 -1"
+            geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.015"
+            material="shader: flat"></a-entity>
+        </a-entity>
+      </a-entity>
+    </a-scene>
+
+    <!-- Back to Library Button - 2D Overlay -->
+    <div id="backButton" style="
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.4)'" 
+       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(102, 126, 234, 0.3)'"
+       onclick="window.location.href='../index.html'">
+      <span>🏠</span>
+      <span>Back to Library</span>
+    </div>
+
+    <script>
+      // Progress tracking
+      const PROGRESS_KEY = 'vr_scenarios_progress';
+      
+      function markScenarioVisited() {
+        const visited = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '[]');
+        if (!visited.includes('railway')) {
+          visited.push('railway');
+          localStorage.setItem(PROGRESS_KEY, JSON.stringify(visited));
+        }
+      }
+      
+      // Interaction feedback system
+      function createAudioContext() {
+        if (!window.audioContext) {
+          window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        return window.audioContext;
+      }
+      
+      function playInteractionSound(frequency = 800, duration = 0.1) {
+        try {
+          const audioContext = createAudioContext();
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+          
+          oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+          oscillator.type = 'sine';
+          
+          gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+          
+          oscillator.start(audioContext.currentTime);
+          oscillator.stop(audioContext.currentTime + duration);
+        } catch (e) {
+          console.log('Audio not available');
+        }
+      }
+      
+      function showInteractionFeedback(element, message) {
+        // Create feedback text
+        const feedback = document.createElement('a-text');
+        feedback.setAttribute('value', message);
+        feedback.setAttribute('position', '0 2 0');
+        feedback.setAttribute('align', 'center');
+        feedback.setAttribute('width', '8');
+        feedback.setAttribute('color', '#00ff00');
+        feedback.setAttribute('animation', 'property: opacity; to: 0; dur: 2000; startEvents: fade');
+        feedback.setAttribute('animation__fade', 'property: position; to: 0 4 0; dur: 2000');
+        
+        element.appendChild(feedback);
+        
+        // Remove feedback after animation
+        setTimeout(() => {
+          if (feedback.parentNode) {
+            feedback.parentNode.removeChild(feedback);
+          }
+        }, 2000);
+      }
+      
+      // Adaptive Navigation System
+      function setupAdaptiveNavigation() {
+        // Check for mobility assistance preferences
+        const mobilityType = localStorage.getItem('mobilityType') || 'none';
+        
+        // Adjust navigation based on mobility type
+        switch(mobilityType) {
+          case 'wheelchair':
+            highlightWheelchairPaths();
+            break;
+          case 'walker':
+            highlightWalkerPaths();
+            break;
+          case 'prosthetic':
+            highlightProstheticPaths();
+            break;
+          default:
+            showAllAccessibilityFeatures();
+        }
+        
+        // Add accessibility feature interactions
+        const accessibilityFeatures = document.querySelectorAll('.accessibility-feature');
+        accessibilityFeatures.forEach(feature => {
+          feature.addEventListener('click', function() {
+            playInteractionSound(500, 0.3);
+            showInteractionFeedback(this, 'Accessibility feature activated!');
+          });
+        });
+      }
+      
+      function highlightWheelchairPaths() {
+        // Highlight ramps and accessible platforms
+        const wheelchairFeatures = document.querySelectorAll('#stationRamp, #accessiblePlatform1');
+        wheelchairFeatures.forEach(feature => {
+          feature.setAttribute('material', 'color: #4CAF50; opacity: 0.9');
+          feature.setAttribute('animation__highlight', 'property: scale; to: 1.1 1.1 1.1; dur: 500; loop: true; dir: alternate');
+        });
+        
+        // Add wheelchair icon to path
+        addNavigationIcon('wheelchair', '0 0.2 -35', '♿ Wheelchair Route');
+      }
+      
+      function highlightWalkerPaths() {
+        // Highlight stable surfaces and handrails
+        const walkerFeatures = document.querySelectorAll('#stationRamp, #accessiblePlatform1');
+        walkerFeatures.forEach(feature => {
+          feature.setAttribute('material', 'color: #FF9800; opacity: 0.9');
+          feature.setAttribute('animation__highlight', 'property: scale; to: 1.05 1.05 1.05; dur: 800; loop: true; dir: alternate');
+        });
+        
+        // Add walker icon to path
+        addNavigationIcon('walker', '0 0.2 -35', '🚶 Walker Route');
+      }
+      
+      function highlightProstheticPaths() {
+        // Highlight even surfaces and clear paths
+        const prostheticFeatures = document.querySelectorAll('#stationRamp, #accessiblePlatform1');
+        prostheticFeatures.forEach(feature => {
+          feature.setAttribute('material', 'color: #9C27B0; opacity: 0.9');
+          feature.setAttribute('animation__highlight', 'property: scale; to: 1.08 1.08 1.08; dur: 600; loop: true; dir: alternate');
+        });
+        
+        // Add prosthetic icon to path
+        addNavigationIcon('prosthetic', '0 0.2 -35', '🦿 Prosthetic Route');
+      }
+      
+      function showAllAccessibilityFeatures() {
+        // Show all accessibility features with standard highlighting
+        const accessibilityFeatures = document.querySelectorAll('.accessibility-feature');
+        accessibilityFeatures.forEach(feature => {
+          feature.setAttribute('animation__pulse', 'property: opacity; to: 0.4; dur: 1000; loop: true; dir: alternate');
+        });
+      }
+      
+      function addNavigationIcon(type, position, label) {
+        const icon = document.createElement('a-text');
+        icon.setAttribute('value', type === 'wheelchair' ? '♿' : type === 'walker' ? '🚶' : '🦿');
+        icon.setAttribute('position', position);
+        icon.setAttribute('align', 'center');
+        icon.setAttribute('width', '4');
+        icon.setAttribute('color', '#ffffff');
+        icon.setAttribute('animation__float', 'property: position; to: 0 0.5 -35; dur: 2000; loop: true; dir: alternate');
+        
+        const labelText = document.createElement('a-text');
+        labelText.setAttribute('value', label);
+        labelText.setAttribute('position', '0 0.8 -35');
+        labelText.setAttribute('align', 'center');
+        labelText.setAttribute('width', '6');
+        labelText.setAttribute('color', '#ffffff');
+        
+        document.querySelector('a-scene').appendChild(icon);
+        document.querySelector('a-scene').appendChild(labelText);
+      }
+      
+      function setupInteractions() {
+        const clickableObjects = document.querySelectorAll('.clickable-object');
+        
+        clickableObjects.forEach(obj => {
+          obj.addEventListener('click', function() {
+            // Visual feedback
+            this.setAttribute('animation__click', 'property: scale; to: 1.1 1.1 1.1; dur: 100; startEvents: click');
+            this.setAttribute('animation__reset', 'property: scale; to: 1 1 1; dur: 100; startEvents: click; delay: 100');
+            
+            // Audio feedback
+            playInteractionSound(600, 0.2);
+            
+            // Text feedback
+            let message = 'Interacted!';
+            switch(this.id) {
+              case 'stationSign':
+                message = 'Welcome to MGR Central!';
+                break;
+              case 'ticketCounter':
+                message = 'Ticket counter open!';
+                break;
+              case 'train':
+                message = 'Train ready for boarding!';
+                break;
+            }
+            showInteractionFeedback(this, message);
+          });
+          
+          // Hover effects
+          obj.addEventListener('mouseenter', function() {
+            this.setAttribute('material', 'color: #ffff00; opacity: 0.8');
+            playInteractionSound(400, 0.1);
+          });
+          
+          obj.addEventListener('mouseleave', function() {
+            // Reset to original color
+            const originalColor = this.getAttribute('color');
+            this.setAttribute('material', `color: ${originalColor}; opacity: 0.8`);
+          });
+        });
+      }
+      
+      // Mark scenario as visited when loaded
+      document.addEventListener('DOMContentLoaded', function() {
+        markScenarioVisited();
+        setupInteractions();
+        setupAdaptiveNavigation();
+        
+        const backButton = document.getElementById('backButton');
+        if (backButton) {
+          backButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = '../index.html';
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

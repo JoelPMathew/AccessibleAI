@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Realistic Operation Theatre – A‑Frame</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+</head>
+<body>
+  <a-scene background="color: #e8f4fb">
+    <!-- Lighting -->
+    <a-entity light="type: ambient; intensity: 0.6; color: #ffffff"></a-entity>
+    <a-entity light="type: point; intensity: 1.4; distance: 20; color: #ffffff" position="0 4 0"></a-entity>
+
+    <!-- Floor (green sterile) -->
+    <a-plane rotation="-90 0 0" width="14" height="14" color="#a9d3c1"></a-plane>
+
+    <!-- Walls -->
+    <a-box position="0 2 -7" depth="0.2" height="4" width="14" color="#f5fbff"></a-box>
+    <a-box position="7 2 0" rotation="0 90 0" depth="0.2" height="4" width="14" color="#f5fbff"></a-box>
+    <a-box position="-7 2 0" rotation="0 90 0" depth="0.2" height="4" width="14" color="#f5fbff"></a-box>
+
+    <!-- Wall stripe -->
+    <a-box position="0 1.2 -6.9" depth="0.05" height="0.4" width="14" color="#7fcfc2"></a-box>
+
+    <!-- Operating Table -->
+    <a-box id="operatingTable" position="0 1 0" depth="2.2" height="0.25" width="0.8" color="#4682b4" 
+           class="clickable-object"
+           animation__hover="property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200"
+           animation__leave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+           cursor="rayOrigin: mouse"
+           raycaster="objects: .clickable-object">
+    </a-box>
+    <a-box position="0 0.55 0.8" depth="0.6" height="0.1" width="0.8" color="#4682b4"></a-box>
+    <a-box position="0 0.55 -0.8" depth="0.6" height="0.1" width="0.8" color="#4682b4"></a-box>
+    <a-box position="0 0.3 0" depth="1.8" height="0.3" width="0.25" color="#808080"></a-box>
+    <a-text value="Operating Table" position="0 1.5 0" align="center" width="6" color="white"></a-text>
+    <a-text value="Click to Interact" position="0 0.7 0" align="center" width="4" color="white" class="interaction-hint"></a-text>
+
+    <!-- Accessible Operating Table -->
+    <a-box id="accessibleTable" position="0 0.1 -2" depth="3" height="0.1" width="1.5" color="#4CAF50" opacity="0.8" 
+           class="accessibility-feature"
+           animation__pulse="property: opacity; to: 0.4; dur: 1000; loop: true; dir: alternate">
+    </a-box>
+    <a-text value="♿ Accessible Table" position="0 0.3 -2" align="center" width="6" color="white" class="accessibility-label"></a-text>
+    <a-text value="Height Adjustable" position="0 0.1 -2" align="center" width="5" color="white" class="accessibility-hint"></a-text>
+
+    <!-- Overhead surgical lights -->
+    <a-entity position="0 3 0">
+      <a-circle radius="0.35" color="#d9e6ff" position="-0.8 0.1 0"></a-circle>
+      <a-circle radius="0.35" color="#d9e6ff" position="0.8 0.1 0"></a-circle>
+      <a-circle radius="0.35" color="#d9e6ff" position="0 0.1 -0.8"></a-circle>
+      <a-circle radius="0.35" color="#d9e6ff" position="0 0.1 0.8"></a-circle>
+      <a-entity light="type: spot; intensity: 0.9; angle: 55" position="0 0 -0.1" rotation="-90 0 0"></a-entity>
+    </a-entity>
+
+    <!-- Monitor -->
+    <a-box id="monitor" position="-2 1.5 -0.5" depth="0.1" height="0.7" width="1" color="#1e2a38" 
+           class="clickable-object"
+           animation__hover="property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200"
+           animation__leave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+           cursor="rayOrigin: mouse"
+           raycaster="objects: .clickable-object">
+    </a-box>
+    <a-entity text="value: HR: 72 bpm | O2: 99%; color: #00ff00;" position="-2 1.5 -0.45"></a-entity>
+    <a-text value="Click to View" position="-2 1.1 -0.5" align="center" width="4" color="white" class="interaction-hint"></a-text>
+
+    <!-- Anesthesia machine on wheels -->
+    <a-box id="anesthesiaMachine" position="2.5 1 0.5" depth="0.7" height="1.2" width="1" color="#d9e6f2" 
+           class="clickable-object"
+           animation__hover="property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200"
+           animation__leave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+           cursor="rayOrigin: mouse"
+           raycaster="objects: .clickable-object">
+    </a-box>
+    <a-box position="2.5 1.6 0.5" depth="0.65" height="0.4" width="0.9" color="#b0c4de"></a-box>
+    <a-cylinder position="2.2 0.3 0.2" radius="0.12" height="0.12" color="#333333"></a-cylinder>
+    <a-cylinder position="2.8 0.3 0.2" radius="0.12" height="0.12" color="#333333"></a-cylinder>
+    <a-cylinder position="2.2 0.3 0.8" radius="0.12" height="0.12" color="#333333"></a-cylinder>
+    <a-cylinder position="2.8 0.3 0.8" radius="0.12" height="0.12" color="#333333"></a-cylinder>
+    <a-text value="Anesthesia Machine" position="2.5 2.2 0.5" align="center" width="6" color="white"></a-text>
+    <a-text value="Click to Operate" position="2.5 0.7 0.5" align="center" width="4" color="white" class="interaction-hint"></a-text>
+
+    <!-- Side tables -->
+    <a-box position="-3 1 -2" depth="1" height="0.2" width="2.5" color="#c1d9f0"></a-box>
+    <a-box position="-3 0.5 -2" depth="1" height="0.6" width="2.5" color="#9fb8d6"></a-box>
+
+    <!-- Simple doctor figure -->
+    <a-cylinder position="-1 1 -2.5" radius="0.25" height="1.7" color="#6495ed"></a-cylinder>
+    <a-sphere position="-1 2 -2.5" radius="0.25" color="#ffe0bd"></a-sphere>
+
+    <!-- Simple nurse figure -->
+    <a-cylinder position="1 1 -2.5" radius="0.25" height="1.6" color="#87ceeb"></a-cylinder>
+    <a-sphere position="1 2 -2.5" radius="0.25" color="#ffe0bd"></a-sphere>
+
+    <!-- Camera -->
+    <a-entity position="0 1.6 5">
+      <a-entity camera look-controls wasd-controls></a-entity>
+    </a-entity>
+
+  </a-scene>
+
+  <!-- Back to Library Button - 2D Overlay -->
+  <div id="backButton" style="
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.4)'" 
+     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(102, 126, 234, 0.3)'"
+     onclick="window.location.href='../index.html'">
+    <span>🏠</span>
+    <span>Back to Library</span>
+  </div>
+
+  <script>
+    // Progress tracking
+    const PROGRESS_KEY = 'vr_scenarios_progress';
+    
+    function markScenarioVisited() {
+      const visited = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '[]');
+      if (!visited.includes('hospital')) {
+        visited.push('hospital');
+        localStorage.setItem(PROGRESS_KEY, JSON.stringify(visited));
+      }
+    }
+    
+    // Interaction feedback system
+    function createAudioContext() {
+      if (!window.audioContext) {
+        window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      return window.audioContext;
+    }
+    
+    function playInteractionSound(frequency = 800, duration = 0.1) {
+      try {
+        const audioContext = createAudioContext();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration);
+      } catch (e) {
+        console.log('Audio not available');
+      }
+    }
+    
+    function showInteractionFeedback(element, message) {
+      // Create feedback text
+      const feedback = document.createElement('a-text');
+      feedback.setAttribute('value', message);
+      feedback.setAttribute('position', '0 2 0');
+      feedback.setAttribute('align', 'center');
+      feedback.setAttribute('width', '8');
+      feedback.setAttribute('color', '#00ff00');
+      feedback.setAttribute('animation', 'property: opacity; to: 0; dur: 2000; startEvents: fade');
+      feedback.setAttribute('animation__fade', 'property: position; to: 0 4 0; dur: 2000');
+      
+      element.appendChild(feedback);
+      
+      // Remove feedback after animation
+      setTimeout(() => {
+        if (feedback.parentNode) {
+          feedback.parentNode.removeChild(feedback);
+        }
+      }, 2000);
+    }
+    
+          // Adaptive Navigation System
+      function setupAdaptiveNavigation() {
+        // Check for mobility assistance preferences
+        const mobilityType = localStorage.getItem('mobilityType') || 'none';
+        
+        // Adjust navigation based on mobility type
+        switch(mobilityType) {
+          case 'wheelchair':
+            highlightWheelchairPaths();
+            break;
+          case 'walker':
+            highlightWalkerPaths();
+            break;
+          case 'prosthetic':
+            highlightProstheticPaths();
+            break;
+          default:
+            showAllAccessibilityFeatures();
+        }
+        
+        // Add accessibility feature interactions
+        const accessibilityFeatures = document.querySelectorAll('.accessibility-feature');
+        accessibilityFeatures.forEach(feature => {
+          feature.addEventListener('click', function() {
+            playInteractionSound(500, 0.3);
+            showInteractionFeedback(this, 'Accessibility feature activated!');
+          });
+        });
+      }
+      
+      function highlightWheelchairPaths() {
+        // Highlight accessible equipment and wide paths
+        const wheelchairFeatures = document.querySelectorAll('#accessibleTable');
+        wheelchairFeatures.forEach(feature => {
+          feature.setAttribute('material', 'color: #4CAF50; opacity: 0.9');
+          feature.setAttribute('animation__highlight', 'property: scale; to: 1.1 1.1 1.1; dur: 500; loop: true; dir: alternate');
+        });
+        
+        // Add wheelchair icon to path
+        addNavigationIcon('wheelchair', '0 0.2 -1', '♿ Accessible Equipment');
+      }
+      
+      function highlightWalkerPaths() {
+        // Highlight stable surfaces and support rails
+        const walkerFeatures = document.querySelectorAll('#accessibleTable');
+        walkerFeatures.forEach(feature => {
+          feature.setAttribute('material', 'color: #FF9800; opacity: 0.9');
+          feature.setAttribute('animation__highlight', 'property: scale; to: 1.05 1.05 1.05; dur: 800; loop: true; dir: alternate');
+        });
+        
+        // Add walker icon to path
+        addNavigationIcon('walker', '0 0.2 -1', '🚶 Stable Surface');
+      }
+      
+      function highlightProstheticPaths() {
+        // Highlight even surfaces and clear paths
+        const prostheticFeatures = document.querySelectorAll('#accessibleTable');
+        prostheticFeatures.forEach(feature => {
+          feature.setAttribute('material', 'color: #9C27B0; opacity: 0.9');
+          feature.setAttribute('animation__highlight', 'property: scale; to: 1.08 1.08 1.08; dur: 600; loop: true; dir: alternate');
+        });
+        
+        // Add prosthetic icon to path
+        addNavigationIcon('prosthetic', '0 0.2 -1', '🦿 Clear Path');
+      }
+      
+      function showAllAccessibilityFeatures() {
+        // Show all accessibility features with standard highlighting
+        const accessibilityFeatures = document.querySelectorAll('.accessibility-feature');
+        accessibilityFeatures.forEach(feature => {
+          feature.setAttribute('animation__pulse', 'property: opacity; to: 0.4; dur: 1000; loop: true; dir: alternate');
+        });
+      }
+      
+      function addNavigationIcon(type, position, label) {
+        const icon = document.createElement('a-text');
+        icon.setAttribute('value', type === 'wheelchair' ? '♿' : type === 'walker' ? '🚶' : '🦿');
+        icon.setAttribute('position', position);
+        icon.setAttribute('align', 'center');
+        icon.setAttribute('width', '4');
+        icon.setAttribute('color', '#ffffff');
+        icon.setAttribute('animation__float', 'property: position; to: 0 0.5 -1; dur: 2000; loop: true; dir: alternate');
+        
+        const labelText = document.createElement('a-text');
+        labelText.setAttribute('value', label);
+        labelText.setAttribute('position', '0 0.8 -1');
+        labelText.setAttribute('align', 'center');
+        labelText.setAttribute('width', '6');
+        labelText.setAttribute('color', '#ffffff');
+        
+        document.querySelector('a-scene').appendChild(icon);
+        document.querySelector('a-scene').appendChild(labelText);
+      }
+      
+      function setupInteractions() {
+        const clickableObjects = document.querySelectorAll('.clickable-object');
+        
+        clickableObjects.forEach(obj => {
+          obj.addEventListener('click', function() {
+            // Visual feedback
+            this.setAttribute('animation__click', 'property: scale; to: 1.1 1.1 1.1; dur: 100; startEvents: click');
+            this.setAttribute('animation__reset', 'property: scale; to: 1 1 1; dur: 100; startEvents: click; delay: 100');
+            
+            // Audio feedback
+            playInteractionSound(600, 0.2);
+            
+            // Text feedback
+            let message = 'Interacted!';
+            switch(this.id) {
+              case 'operatingTable':
+                message = 'Operating table ready!';
+                break;
+              case 'monitor':
+                message = 'Vital signs displayed!';
+                break;
+              case 'anesthesiaMachine':
+                message = 'Anesthesia system active!';
+                break;
+            }
+            showInteractionFeedback(this, message);
+          });
+          
+          // Hover effects
+          obj.addEventListener('mouseenter', function() {
+            this.setAttribute('material', 'color: #ffff00; opacity: 0.8');
+            playInteractionSound(400, 0.1);
+          });
+          
+          obj.addEventListener('mouseleave', function() {
+            // Reset to original color
+            const originalColor = this.getAttribute('color');
+            this.setAttribute('material', `color: ${originalColor}; opacity: 0.8`);
+          });
+        });
+      }
+    
+    // Mark scenario as visited when loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      markScenarioVisited();
+      setupInteractions();
+      setupAdaptiveNavigation();
+      
+      const backButton = document.getElementById('backButton');
+      if (backButton) {
+        backButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          window.location.href = '../index.html';
+        });
+      }
+    });
+  </script>
+</body>
+</html>
