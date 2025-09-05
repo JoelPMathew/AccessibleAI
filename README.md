@@ -1,4 +1,4 @@
-♿ Immersive Accessibility Simulator
+*♿ Immersive Accessibility Simulator*
 
 An interactive VR/AR web application built with A-Frame
  to simulate real-world environments (hospital rooms, grocery stores, public spaces, etc.) for people with physical disabilities.
