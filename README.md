@@ -1,65 +1,68 @@
 ♿ Immersive Accessibility Simulator
-
-An interactive VR/AR web application built with A-Frame
- to simulate real-world environments (hospital rooms, grocery stores, public spaces, etc.) for people with physical disabilities.
-
-This app provides adaptive, inclusive, and safe practice environments that promote independence, confidence, and social participation.
+An Interactive VR/AR Web Application for Inclusive Accessibility Training
 
 📌 Problem Statement (DSMN 4)
-
 People with physical disabilities often face barriers in:
 
-Accessing public spaces
+🚪 Accessing public spaces
 
-Attending social events
+🎉 Attending social events
 
-Performing daily activities
+🛒 Performing daily activities
 
-Current accessibility solutions are frequently inadequate, resulting in reduced independence, confidence, and well-being.
+💡 Current accessibility solutions are frequently inadequate, leading to:
 
-👉 Our solution creates immersive, realistic environments that simulate daily challenges and enable safe training, rehabilitation, and empowerment.
+Reduced independence
+
+Lower confidence
+
+Negative impact on well-being
+
+👉 Our Solution:
+We create immersive, realistic environments that simulate daily challenges, enabling safe training, rehabilitation, and empowerment.
 
 🎯 Goals
-
 🏙 Realistic VR Scenarios → Practice daily tasks in immersive environments
 
 🧭 Adaptive Navigation → Wheelchair-friendly, gaze-based, and WASD controls
 
-🛡 Safe Practice → Simulations without real-world risks
+🛡 Safe Practice → Low-risk simulations of real-world challenges
 
-📊 Progress Tracking → Task completion, interaction metrics, and skill growth
+📊 Progress Tracking → Monitor task completion, interaction metrics, and skill growth
 
 🌍 Social Inclusion → Foster independence, equity, and empowerment
 
 🏗 Features
-
 ✨ Core
+🌍 Scenario Library
 
-🌍 Scenario Library (Hospital, Grocery Store, Social Events, etc.)
+Hospital room
+
+Grocery store
+
+Social events
 
 🎮 Immersive VR/AR Environments (A-Frame + WebXR)
 
-🧭 Accessible Navigation (keyboard, cursor, or gaze interaction)
+🧭 Accessible Navigation (Keyboard, Mouse/Cursor, or Gaze interaction)
 
 📊 Tracking & Personalization
+✅ Progress Metrics → Time, completion, errors
 
-Progress Metrics (time, completion, errors)
+🤖 (Future) Adaptive AI Personalization
 
-Adaptive AI Personalization (future integration)
+⚙️ Assistive Integration
+♿ Integration with wheelchairs, prosthetics, smart mobility aids
 
-⚙ Assistive Integration
-
-Wheelchairs, prosthetics, smart mobility aids
-
-Wearable sensors for motion tracking (future scope)
+⌚ (Future) Wearable sensors for motion tracking
 
 🎲 Engagement
+🏆 Gamification → Points, badges, challenges
 
-Gamification (points, badges, challenges)
-
-Scenario difficulty levels
+🎚 Scenario difficulty levels for gradual skill-building
 
 📂 Project Structure
+text
 project-root/
 │── index.html              # Dashboard (landing page)
 │── scenarios/
@@ -72,49 +75,47 @@ project-root/
 │── js/
 │   └── app.js              # Navigation + logic
 │── README.md               # Documentation
-
 ⚙️ Tech Stack
-
-🕶 A-Frame – VR/AR Web Framework
+🕶 A-Frame → VR/AR Web Framework
 
 🌐 HTML5 / CSS3 / JavaScript
 
-🖼 3D Models – GLTF/GLB for realistic assets
+🖼 3D Models → GLTF/GLB for realistic assets
 
-♿ Accessibility Standards – ADA, WCAG compliance
+♿ Accessibility Standards → ADA, WCAG compliance
 
-🤖 (Planned) AI/ML for adaptive difficulty
+🤖 (Planned) AI/ML adaptive difficulty engine
 
 🚀 Getting Started
-
 Clone the repo
 
+bash
 git clone https://github.com/yourusername/immersive-accessibility-simulator.git
 cd immersive-accessibility-simulator
+Open the App
 
+Open index.html in a modern browser (Chrome, Firefox)
 
-Open the app
-
-Open index.html in a modern browser (Chrome, Firefox).
-
-Use the dashboard to pick a scenario.
+Use the dashboard to select a scenario
 
 Navigation Controls
 
-WASD keys → Move around
+🎮 WASD keys → Move around
 
-Mouse / Cursor → Look and interact
+🖱 Mouse / Cursor → Look and interact
 
-VR Headset (WebXR) → Fully immersive mode
+🥽 VR Headset (WebXR) → Enter immersive mode
 
 🔮 Future Roadmap
+👥 Multiplayer VR for collaboration
 
- Multiplayer VR for collaboration
+⌚ Wearable sensor integration (motion tracking)
 
- Wearable sensor integration (motion tracking)
+🏢 Expanded Scenario Library (transport, office, events)
 
- Expanded scenario library (transport, office, events)
+🧑‍⚕️ Remote monitoring dashboard for therapists & caregivers
 
- Therapist/caregiver remote monitoring dashboard
+📱 Mobile AR/WebXR compatibility
 
- Mobile AR/WebXR compatibility
+🌍 Vision
+This project aspires to create a truly inclusive digital ecosystem where individuals with physical disabilities can train, adapt, and thrive in immersive simulations, making real-world interactions safer, more independent, and empowering.
