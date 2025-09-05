@@ -1,89 +1,120 @@
 ♿ Immersive Accessibility Simulator
 
-An interactive VR/AR web application built with A-Frame to simulate real-world environments (hospital rooms, grocery stores, public spaces, etc.) for people with physical disabilities. The app provides adaptive, inclusive, and safe practice environments that promote independence, confidence, and social participation.
+An interactive VR/AR web application built with A-Frame
+ to simulate real-world environments (hospital rooms, grocery stores, public spaces, etc.) for people with physical disabilities.
 
-🚀 Problem Statement (DSMN 4)
+This app provides adaptive, inclusive, and safe practice environments that promote independence, confidence, and social participation.
 
-People with physical disabilities often encounter barriers when accessing public spaces, attending social events, or performing daily activities, which limits independence and overall quality of life. Current solutions are inadequate, leading to social exclusion and reduced well-being.
+📌 Problem Statement (DSMN 4)
 
-This project addresses these issues by offering immersive, inclusive, and adaptive environments for training, rehabilitation, and empowerment.
+People with physical disabilities often face barriers in:
+
+Accessing public spaces
+
+Attending social events
+
+Performing daily activities
+
+Current accessibility solutions are frequently inadequate, resulting in reduced independence, confidence, and well-being.
+
+👉 Our solution creates immersive, realistic environments that simulate daily challenges and enable safe training, rehabilitation, and empowerment.
 
 🎯 Goals
 
-Create realistic VR scenarios that simulate public and private spaces.
+🏙 Realistic VR Scenarios → Practice daily tasks in immersive environments
 
-Provide adaptive navigation and assistive features for users with mobility limitations.
+🧭 Adaptive Navigation → Wheelchair-friendly, gaze-based, and WASD controls
 
-Enable safe practice of daily activities without physical risks.
+🛡 Safe Practice → Simulations without real-world risks
 
-Record interaction metrics to track progress.
+📊 Progress Tracking → Task completion, interaction metrics, and skill growth
 
-Foster equity, empowerment, and social inclusion.
+🌍 Social Inclusion → Foster independence, equity, and empowerment
 
 🏗 Features
 
-🌍 Scenario Library: Hospital, Grocery Store, Social Events, and more.
+✨ Core
 
-🎮 Immersive VR/AR Environments: Built using A-Frame.
+🌍 Scenario Library (Hospital, Grocery Store, Social Events, etc.)
 
-🧭 Accessible Navigation: WASD + cursor/gaze interaction for mobility-friendly use.
+🎮 Immersive VR/AR Environments (A-Frame + WebXR)
 
-📊 Progress Tracking: Time, task completion, and performance metrics.
+🧭 Accessible Navigation (keyboard, cursor, or gaze interaction)
 
-🧑‍🤝‍🧑 Assistive Integration: Wheelchairs, smart mobility aids, motion sensors.
+📊 Tracking & Personalization
 
-🏅 Gamification: Points, badges, and skill challenges.
+Progress Metrics (time, completion, errors)
 
-⚙ Adaptive Personalization: AI-based scenario difficulty adjustment.
+Adaptive AI Personalization (future integration)
+
+⚙ Assistive Integration
+
+Wheelchairs, prosthetics, smart mobility aids
+
+Wearable sensors for motion tracking (future scope)
+
+🎲 Engagement
+
+Gamification (points, badges, challenges)
+
+Scenario difficulty levels
 
 📂 Project Structure
 project-root/
-│── index.html              # Dashboard (entry point)
+│── index.html              # Dashboard (landing page)
 │── scenarios/
 │   ├── hospital.html       # Hospital room scenario
 │   ├── grocery.html        # Grocery store scenario
-│   └── ...more scenarios
+│   └── ...other scenarios
 │── assets/                 # Models, textures, sounds
 │── css/
-│   └── style.css           # Styling for dashboard
+│   └── style.css           # Custom styling
 │── js/
-│   └── app.js              # Navigation, scenario integration
-│── README.md               # Project documentation
+│   └── app.js              # Navigation + logic
+│── README.md               # Documentation
 
-⚙️ Technologies Used
+⚙️ Tech Stack
 
-A-Frame (VR/AR framework for the web)
+🕶 A-Frame – VR/AR Web Framework
 
-HTML5 / CSS3 / JavaScript
+🌐 HTML5 / CSS3 / JavaScript
 
-3D Models (GLTF/GLB for realism)
+🖼 3D Models – GLTF/GLB for realistic assets
 
-Accessibility Guidelines (ADA, WCAG)
+♿ Accessibility Standards – ADA, WCAG compliance
 
-(Future) AI/ML modules for personalization
+🤖 (Planned) AI/ML for adaptive difficulty
 
-📖 How to Run
+🚀 Getting Started
 
-Clone the repo:
+Clone the repo
 
 git clone https://github.com/yourusername/immersive-accessibility-simulator.git
 cd immersive-accessibility-simulator
 
 
+Open the app
+
 Open index.html in a modern browser (Chrome, Firefox).
 
-Use the dashboard to choose a scenario.
+Use the dashboard to pick a scenario.
 
-Interact inside VR with WASD keys (movement) and mouse/cursor (interaction).
+Navigation Controls
+
+WASD keys → Move around
+
+Mouse / Cursor → Look and interact
+
+VR Headset (WebXR) → Fully immersive mode
 
 🔮 Future Roadmap
 
- Add multiplayer collaboration in VR.
+ Multiplayer VR for collaboration
 
- Integrate wearable sensor inputs.
+ Wearable sensor integration (motion tracking)
 
- Expand scenario library (transport, office, public events).
+ Expanded scenario library (transport, office, events)
 
- Add therapist/caregiver remote monitoring dashboard.
+ Therapist/caregiver remote monitoring dashboard
 
- Mobile AR (WebXR) compatibility.
+ Mobile AR/WebXR compatibility
