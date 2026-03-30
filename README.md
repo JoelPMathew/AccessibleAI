@@ -81,8 +81,7 @@ project-root/
 ## 🚀 Getting Started
 
 ### 1. Clone the Repository
-git clone https://github.com/yourusername/immersive-accessibility-simulator.git
-cd immersive-accessibility-simulator
+
 
 ### 2. Open the Application
 - Open `index.html` in a modern browser *(Chrome, Firefox)*  
